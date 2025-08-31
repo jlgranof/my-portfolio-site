@@ -1,11 +1,5 @@
 import { useState, useRef, useEffect, type PropsWithChildren } from "react"
-
-interface WindowPosition {
-  x: number
-  y: number
-  width: number
-  height: number
-}
+import type { WindowPosition } from "../config/windowConfigs"
 
 interface ResizableWindowProps extends PropsWithChildren {
   title: string

@@ -1,38 +1,33 @@
 import { useState, useEffect } from "react"
 import ResizableWindow from "./ResizableWindow"
-import AboutWindow from "./windows/AboutWindow"
-import ProjectsWindow from "./windows/ProjectsWindow"
-import ResumeWindow from "./windows/ResumeWindow"
-import ContactWindow from "./windows/ContactWindow"
+import { WINDOW_CONFIGS } from "../config/windowConfigs"
+import type { WindowPosition, WindowConfig } from "../config/windowConfigs"
 
 interface WindowManagerProps {
   activeWindows: string[]
   onCloseWindow: (windowId: string) => void
 }
 
-interface WindowPosition {
-  x: number
-  y: number
-  width: number
-  height: number
-}
-
 export default function WindowManager({ activeWindows, onCloseWindow }: WindowManagerProps) {
-  const [windowPositions, setWindowPositions] = useState<Record<string, WindowPosition>>({
-    about: { x: 0, y: 0, width: 400, height: 300 },
-    projects: { x: 0, y: 0, width: 500, height: 300 },
-    resume: { x: 0, y: 0, width: 450, height: 300 },
-    contact: { x: 0, y: 0, width: 350, height: 300 }
+  // Initialize window positions from config
+  const [windowPositions, setWindowPositions] = useState<Record<string, WindowPosition>>(() => {
+    const positions: Record<string, WindowPosition> = {}
+    Object.values(WINDOW_CONFIGS).forEach(config => {
+      positions[config.id] = config.defaultPosition
+    })
+    return positions
   })
 
-  const [windowZIndexes, setWindowZIndexes] = useState<Record<string, number>>({
-    about: 100,
-    projects: 101,
-    resume: 102,
-    contact: 103
+  // Initialize window z-indexes from config
+  const [windowZIndexes, setWindowZIndexes] = useState<Record<string, number>>(() => {
+    const zIndexes: Record<string, number> = {}
+    Object.values(WINDOW_CONFIGS).forEach(config => {
+      zIndexes[config.id] = config.defaultZIndex
+    })
+    return zIndexes
   })
 
-  const [nextZIndex, setNextZIndex] = useState(104)
+  const [nextZIndex, setNextZIndex] = useState(Math.max(...Object.values(WINDOW_CONFIGS).map(c => c.defaultZIndex)) + 1)
   const [previousActiveWindows, setPreviousActiveWindows] = useState<string[]>([])
 
   const updateWindowPosition = (windowId: string, position: Partial<WindowPosition>) => {
@@ -67,69 +62,26 @@ export default function WindowManager({ activeWindows, onCloseWindow }: WindowMa
   }, [activeWindows, previousActiveWindows])
 
   const renderWindow = (windowId: string) => {
+    const config = WINDOW_CONFIGS[windowId]
+    if (!config) return null
+
     const position = windowPositions[windowId]
     const zIndex = windowZIndexes[windowId]
-    
-    switch (windowId) {
-      case 'about':
-        return (
-          <ResizableWindow
-            key={windowId}
-            title="About"
-            position={position}
-            zIndex={zIndex}
-            onPositionChange={(pos) => updateWindowPosition(windowId, pos)}
-            onClose={() => onCloseWindow(windowId)}
-            onClick={() => bringWindowToFront(windowId)}
-          >
-            <AboutWindow />
-          </ResizableWindow>
-        )
-      case 'projects':
-        return (
-          <ResizableWindow
-            key={windowId}
-            title="Projects"
-            position={position}
-            zIndex={zIndex}
-            onPositionChange={(pos) => updateWindowPosition(windowId, pos)}
-            onClose={() => onCloseWindow(windowId)}
-            onClick={() => bringWindowToFront(windowId)}
-          >
-            <ProjectsWindow />
-          </ResizableWindow>
-        )
-      case 'resume':
-        return (
-          <ResizableWindow
-            key={windowId}
-            title="Resume"
-            position={position}
-            zIndex={zIndex}
-            onPositionChange={(pos) => updateWindowPosition(windowId, pos)}
-            onClose={() => onCloseWindow(windowId)}
-            onClick={() => bringWindowToFront(windowId)}
-          >
-            <ResumeWindow />
-          </ResizableWindow>
-        )
-      case 'contact':
-        return (
-          <ResizableWindow
-            key={windowId}
-            title="Contact"
-            position={position}
-            zIndex={zIndex}
-            onPositionChange={(pos) => updateWindowPosition(windowId, pos)}
-            onClose={() => onCloseWindow(windowId)}
-            onClick={() => bringWindowToFront(windowId)}
-          >
-            <ContactWindow />
-          </ResizableWindow>
-        )
-      default:
-        return null
-    }
+    const WindowComponent = config.component
+
+    return (
+      <ResizableWindow
+        key={windowId}
+        title={config.title}
+        position={position}
+        zIndex={zIndex}
+        onPositionChange={(pos) => updateWindowPosition(windowId, pos)}
+        onClose={() => onCloseWindow(windowId)}
+        onClick={() => bringWindowToFront(windowId)}
+      >
+        <WindowComponent />
+      </ResizableWindow>
+    )
   }
 
   return (

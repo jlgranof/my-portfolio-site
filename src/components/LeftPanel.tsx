@@ -1,13 +1,13 @@
 import NamePlate from "./NamePlate"
 import RadarWindow from "./RadarWindow"
-import TelemetryWindow from "./TelemetryWindow"
+import MissionLog from "./MissionLog"
 
 export default function LeftPanel() {
   return (
     <div className="left-panel">
       <NamePlate />
       <RadarWindow />
-      <TelemetryWindow />
+      <MissionLog />
     </div>
   )
 }

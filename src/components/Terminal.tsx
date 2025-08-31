@@ -1,48 +1,38 @@
-import { useState, useRef, useEffect } from "react"
+import { useEffect } from "react"
+import { useTerminal } from "../hooks/useTerminal"
 
 interface TerminalProps {
-  output: string[]
-  onCommand: (command: string) => void
+  onOpenWindow?: (windowId: string) => void
 }
 
-export default function Terminal({ output, onCommand }: TerminalProps) {
-  const [input, setInput] = useState("")
-  const [cursorVisible, setCursorVisible] = useState(true)
-  const inputRef = useRef<HTMLDivElement>(null)
-  const outputRef = useRef<HTMLDivElement>(null)
+export default function Terminal({ onOpenWindow }: TerminalProps) {
+  const {
+    output,
+    handleCommand,
+    input,
+    inputRef,
+    clearInput,
+    handleInput,
+    focusInput,
+    cursorVisible,
+    outputRef,
+    scrollToBottom
+  } = useTerminal({ onOpenWindow })
 
+  // Auto-scroll to bottom when output changes
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCursorVisible(prev => !prev)
-    }, 500)
-
-    return () => clearInterval(interval)
-  }, [])
-
-  useEffect(() => {
-    if (outputRef.current) {
-      outputRef.current.scrollTop = outputRef.current.scrollHeight
-    }
-  }, [output])
+    scrollToBottom()
+  }, [output, scrollToBottom])
 
   // Auto-focus the input when component mounts
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus()
-    }
-  }, [])
-
-  const clearInput = () => {
-    if (inputRef.current) {
-      inputRef.current.textContent = ''
-      setInput("")
-    }
-  }
+    focusInput()
+  }, [focusInput])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (input.trim()) {
-      onCommand(input.trim())
+      handleCommand(input.trim())
       clearInput()
     }
   }
@@ -51,11 +41,6 @@ export default function Terminal({ output, onCommand }: TerminalProps) {
     if (e.key === 'Enter') {
       handleSubmit(e)
     }
-  }
-
-  const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
-    const text = e.currentTarget.textContent || ''
-    setInput(text)
   }
 
   return (

@@ -102,8 +102,8 @@ Monitor styles
   position: relative; 
   z-index: 1;
   max-width: var(--monitor-max-width); 
-  margin: 4rem auto; 
-  padding: var(--monitor-padding); 
+  margin: 5rem auto; 
+  padding: 0 var(--monitor-padding) var(--monitor-padding); 
   border-radius: var(--monitor-border-radius);
   background: linear-gradient(145deg, var(--bezel), #0a0e13 60%, var(--bezel-light) 100%);
   border: 1px solid #0b141d;
@@ -203,6 +203,7 @@ Screen styles
 .screen{
   position: relative;
   aspect-ratio: 16 / 9;
+  margin-top: -16px;
   border-radius: var(--screen-border-radius);
   overflow: hidden;
   background: #061015;
@@ -552,20 +553,156 @@ Left Panel Components
   box-shadow: 0 0 4px #ffcc55;
 }
 
-/* Telemetry Window */
-.telemetry-window {
-  flex: 1;
-  min-height: 120px;
+/* Monitor Plaque */
+.monitor-plaque {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 45px;
+  background: var(--bezel);
+  border: 2px solid var(--bezel-light);
+  border-radius: 8px 8px 0 0;
+  box-shadow: 
+    inset 0 0 0 1px rgba(108,255,218,.1),
+    0 4px 12px rgba(0,0,0,.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
-.telemetry-content {
+.monitor-plaque::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--phosphor), transparent);
+  animation: plaqueGlow 3s ease-in-out infinite;
+}
+
+.monitor-plaque .plaque-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.monitor-plaque .plaque-text {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.monitor-plaque .plaque-text .main-text {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--phosphor);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px var(--phosphor);
+  line-height: 1;
+}
+
+.monitor-plaque .plaque-text .sub-text {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.8;
+}
+
+.monitor-plaque .plaque-screws {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.monitor-plaque .plaque-screws .screw {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #888, #444 60%, #222 100%);
+  border: 1px solid rgba(0,0,0,.5);
+  box-shadow: 
+    inset 0 0 3px rgba(255,255,255,.3), 
+    0 2px 4px rgba(0,0,0,.6),
+    0 0 8px rgba(108,255,218,.3);
+}
+
+.monitor-plaque .plaque-screws .screw.tl {
+  top: 50%;
+  left: 8px;
+  transform: translateY(-50%);
+}
+
+.monitor-plaque .plaque-screws .screw.tr {
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+}
+
+.monitor-plaque .plaque-screws .screw::after {
+  content: "★";
+  color: var(--phosphor);
+  font-weight: 700;
+  font-size: 8px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.9;
+  text-shadow: 0 0 4px var(--phosphor);
+  line-height: 1;
+}
+
+@keyframes plaqueGlow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+@keyframes ledPulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+@keyframes indicatorBlink {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* Mission Log Window */
+.mission-log {
+  flex: 1;
+  min-height: 120px;
+  background: var(--window-bg);
+  border: 1px solid var(--window-border);
+  border-radius: 8px;
+  box-shadow: 
+    inset 0 0 0 1px rgba(108,255,218,.05),
+    0 4px 12px rgba(0,0,0,.3);
+}
+
+.mission-log-content {
   padding: 12px;
   display: flex;
   flex-direction: column;
   height: calc(100% - 37px);
 }
 
-.stream-container {
+.log-container {
   flex: 1;
   overflow-y: auto;
   background: rgba(0,0,0,.2);
@@ -578,7 +715,7 @@ Left Panel Components
   min-height: 120px;
 }
 
-.stream-item {
+.log-entry {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -587,47 +724,87 @@ Left Panel Components
   border-left: 2px solid;
   border-radius: 2px;
   font-size: 8px;
-  animation: streamFadeIn 0.5s ease-out;
+  animation: logFadeIn 0.5s ease-out;
   position: relative;
 }
 
-.stream-item.success {
-  background: rgba(108,255,218,.05);
-}
-
-.stream-item.warning {
-  background: rgba(255,204,85,.05);
-}
-
-.stream-item.error {
-  background: rgba(255,107,107,.05);
-}
-
-.stream-item.info {
+.log-entry.info {
   background: rgba(154,213,198,.05);
 }
 
-.stream-timestamp {
+.log-entry.success {
+  background: rgba(108,255,218,.05);
+}
+
+.log-entry.system_warning {
+  background: rgba(255,107,107,.05);
+}
+
+.log-entry.mission_success {
+  background: rgba(77,171,247,.05);
+}
+
+.log-entry.mission_failed {
+  background: rgba(174,62,201,.05);
+}
+
+.log-entry.alert {
+  background: rgba(255,0,0,.1);
+  animation: logFadeIn 0.5s ease-out, alertFlash 0.8s ease-in-out infinite;
+  font-weight: bold;
+  text-transform: uppercase;
+  border-left: 3px solid #ff0000 !important;
+  box-shadow: 
+    0 0 8px rgba(255,0,0,.4),
+    inset 0 0 10px rgba(255,0,0,.05);
+  position: relative;
+}
+
+.log-entry.alert::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,0,0,.2), transparent);
+  animation: alertSweep 2s ease-in-out infinite;
+}
+
+.log-entry.alert .log-message {
+  color: #ff4444 !important;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 4px rgba(255,0,0,.6);
+}
+
+.log-entry.alert .log-timestamp {
+  color: #ff8888 !important;
+  font-weight: 600;
+  text-shadow: 0 0 3px rgba(255,0,0,.4);
+}
+
+.log-timestamp {
   color: var(--muted);
   font-size: 7px;
   flex-shrink: 0;
   font-family: monospace;
 }
 
-.stream-message {
+.log-message {
   flex: 1;
   font-weight: 500;
 }
 
-.stream-indicator {
+.log-indicator {
   width: 4px;
   height: 4px;
   border-radius: 50%;
   flex-shrink: 0;
-  animation: streamBlink 1.5s ease-in-out infinite;
+  animation: logBlink 1.5s ease-in-out infinite;
 }
 
-@keyframes streamFadeIn {
+@keyframes logFadeIn {
   from {
     opacity: 0;
     transform: translateY(-5px);
@@ -638,9 +815,37 @@ Left Panel Components
   }
 }
 
-@keyframes streamBlink {
+@keyframes logBlink {
   0%, 100% { opacity: 0.5; }
   50% { opacity: 1; }
+}
+
+@keyframes alertFlash {
+  0%, 100% { 
+    background: rgba(255,0,0,.1);
+    box-shadow: 
+      0 0 8px rgba(255,0,0,.4),
+      inset 0 0 10px rgba(255,0,0,.05);
+  }
+  50% { 
+    background: rgba(255,0,0,.15);
+    box-shadow: 
+      0 0 12px rgba(255,0,0,.6),
+      0 0 20px rgba(255,0,0,.3),
+      inset 0 0 15px rgba(255,0,0,.1);
+  }
+}
+
+@keyframes alertShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-1px); }
+  75% { transform: translateX(1px); }
+}
+
+@keyframes alertSweep {
+  0% { left: -100%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
 }
 
 
