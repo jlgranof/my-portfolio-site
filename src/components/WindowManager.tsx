@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import ResizableWindow from "./ResizableWindow"
 import { WINDOW_CONFIGS } from "../config/windowConfigs"
-import type { WindowPosition, WindowConfig } from "../config/windowConfigs"
+import type { WindowPosition } from "../config/windowConfigs"
 
 interface WindowManagerProps {
   activeWindows: string[]
