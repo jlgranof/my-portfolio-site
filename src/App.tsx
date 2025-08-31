@@ -1,7 +1,7 @@
-import RoomBackground from "./components/RoomBackground";
-import Monitor from "./components/Monitor";
-import Screen from "./components/Screen";
-import HUD from "./components/HUD";
+import RoomBackground from "./components/RoomBackground"
+import Monitor from "./components/Monitor"
+import Screen from "./components/Screen"
+import MissionControl from "./components/MissionControl"
 
 function App() {
   return (
@@ -9,11 +9,11 @@ function App() {
       <RoomBackground />
       <Monitor>
         <Screen>
-          <HUD />
+          <MissionControl />
         </Screen>
       </Monitor>
     </>
   );
 }
 
-export default App;
+export default App

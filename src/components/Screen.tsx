@@ -1,11 +1,15 @@
-import type { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react"
 
-export default function Screen({ children }: PropsWithChildren) {
+interface ScreenProps extends PropsWithChildren {
+  className?: string;
+}
+
+export default function Screen({ children, className }: ScreenProps) {
   return (
-    <div className="screen">
+    <div className={`screen ${className || ''}`}>
       {children}
       <div className="glass" />
       <div className="noise" />
     </div>
-  );
+  )
 }

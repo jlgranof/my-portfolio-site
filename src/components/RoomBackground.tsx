@@ -1,3 +1,3 @@
 export default function RoomBackground() {
-  return <div className="room-background" />;
+  return <div className="room-background" />
 }

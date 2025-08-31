@@ -1,11 +1,15 @@
-import type { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react"
 
-export default function Monitor({ children }: PropsWithChildren) {
+interface MonitorProps extends PropsWithChildren {
+  className?: string;
+}
+
+export default function Monitor({ children, className }: MonitorProps) {
   return (
-    <div className="monitor">
-      <div className="status">
-        <div className="led green" title="POWER" />
-        <div className="led red" title="COMMS LINK" />
+    <div className={`monitor ${className || ''}`}>
+      <div className="status" role="status" aria-label="System Status">
+        <div className="led green" title="POWER" aria-label="Power Status: Online" />
+        <div className="led red" title="COMMS LINK" aria-label="Communication Link: Active" />
       </div>
       <div className="screws">
         <div className="screw tl" />
@@ -15,5 +19,5 @@ export default function Monitor({ children }: PropsWithChildren) {
       </div>
       {children}
     </div>
-  );
+  )
 }
