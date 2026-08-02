@@ -14,54 +14,38 @@ const DEFAULT_OUTPUT = [
 export function useTerminalOutput({ onOpenWindow }: UseTerminalOutputProps) {
   const [output, setOutput] = useState<string[]>(DEFAULT_OUTPUT)
 
-  const clearOutput = useCallback(() => {
-    setOutput(DEFAULT_OUTPUT)
-  }, [])
-
   const handleCommand = useCallback((command: string) => {
-    const newOutput = [...output, `> ${command}`]
     const commandConfig = getCommand(command)
-    
-    if (!commandConfig) {
-      newOutput.push(`Command not found: ${command}`, "Type 'help' for available commands.", "")
-      setOutput(newOutput)
+
+    if (commandConfig?.action === 'clear') {
+      setOutput(DEFAULT_OUTPUT)
       return
     }
 
-    switch (commandConfig.action) {
-      case 'help':
-        const commands = getAvailableCommands()
-        newOutput.push(
-          "Available commands:",
-          ...commands.map(cmd => `  ${cmd.name.padEnd(10)} - ${cmd.description}`),
-          ""
-        )
-        break
-        
-      case 'openWindow':
-        if (commandConfig.target && onOpenWindow) {
-          onOpenWindow(commandConfig.target)
-          newOutput.push(`Opening ${commandConfig.target} window...`, "")
-        }
-        break
-        
-      case 'clear':
-        clearOutput()
-        return // Don't update output, clearOutput handles it
-        
-      case 'custom':
-        if (commandConfig.customHandler) {
-          commandConfig.customHandler()
-          newOutput.push(`Executing ${command}...`, "")
-        }
-        break
+    const lines: string[] = []
+    if (!commandConfig) {
+      lines.push(`Command not found: ${command}`, "Type 'help' for available commands.", "")
+    } else if (commandConfig.action === 'help') {
+      const commands = getAvailableCommands()
+      lines.push(
+        "Available commands:",
+        ...commands.map(cmd => `  ${cmd.name.padEnd(10)} - ${cmd.description}`),
+        ""
+      )
+    } else if (commandConfig.action === 'openWindow') {
+      if (commandConfig.target && onOpenWindow) {
+        onOpenWindow(commandConfig.target)
+        lines.push(`Opening ${commandConfig.target} window...`, "")
+      }
+    } else if (commandConfig.action === 'custom') {
+      if (commandConfig.customHandler) {
+        commandConfig.customHandler()
+        lines.push(`Executing ${command}...`, "")
+      }
     }
-    
-    setOutput(newOutput)
-  }, [output, onOpenWindow, clearOutput])
 
-  return {
-    output,
-    handleCommand
-  }
+    setOutput(prev => [...prev, `> ${command}`, ...lines])
+  }, [onOpenWindow])
+
+  return { output, handleCommand }
 }
