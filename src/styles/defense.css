@@ -1,0 +1,92 @@
+/* Radar Defense minigame */
+
+.radar-defense {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+}
+
+.defense-hud {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 280px;
+  font-size: 11px;
+  color: var(--phosphor);
+  letter-spacing: 1px;
+}
+
+.defense-canvas-wrap {
+  position: relative;
+  width: min(100%, 280px);
+  aspect-ratio: 1 / 1;
+}
+
+.defense-canvas {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(108, 255, 218, 0.05) 0%, rgba(0, 0, 0, 0.6) 100%);
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.defense-over {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(2, 5, 7, 0.85);
+  border-radius: 50%;
+  font-size: 13px;
+  color: var(--phosphor);
+}
+
+.defense-over-title {
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--danger);
+}
+
+.defense-over-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.defense-over-actions button,
+.defense-exit {
+  font-family: inherit;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--phosphor);
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--window-border);
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.defense-help {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 9px;
+  color: var(--muted);
+}
+
+.rank-chip {
+  margin-left: auto;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: var(--muted);
+  border: 1px solid var(--panel-border);
+  border-radius: 3px;
+  padding: 1px 6px;
+}

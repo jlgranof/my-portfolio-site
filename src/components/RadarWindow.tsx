@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react"
+import RadarDefense from "./RadarDefense"
 
 interface RadarTarget {
   id: number
@@ -12,7 +13,26 @@ interface RadarTarget {
 
 export default function RadarWindow() {
   const [targets, setTargets] = useState<RadarTarget[]>([])
+  const [defending, setDefending] = useState(false)
   const idRef = useRef(1)
+  const tapsRef = useRef<number[]>([])
+
+  // `defend` command in the terminal fires this event
+  useEffect(() => {
+    const start = () => setDefending(true)
+    window.addEventListener('granof:defend', start)
+    return () => window.removeEventListener('granof:defend', start)
+  }, [])
+
+  // Secret trigger: tap the radar 3 times within 1.5s
+  const handleRadarTap = () => {
+    const now = Date.now()
+    tapsRef.current = [...tapsRef.current.filter(t => now - t < 1500), now]
+    if (tapsRef.current.length >= 3) {
+      tapsRef.current = []
+      setDefending(true)
+    }
+  }
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -61,7 +81,11 @@ export default function RadarWindow() {
         <span>RADAR SCAN</span>
       </div>
       <div className="radar-display">
-        <div className="radar-circle">
+        {defending ? (
+          <RadarDefense onExit={() => setDefending(false)} />
+        ) : (
+        <>
+        <div className="radar-circle" onPointerDown={handleRadarTap}>
           <div className="radar-sweep" />
           <div className="radar-grid">
             <div className="grid-line horizontal" />
@@ -116,6 +140,8 @@ export default function RadarWindow() {
             </div>
           </div>
         </div>
+        </>
+        )}
       </div>
     </div>
   )

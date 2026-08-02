@@ -7,13 +7,14 @@ import SkillsWindow from "./windows/SkillsWindow"
 import ResumeWindow from "./windows/ResumeWindow"
 import ContactWindow from "./windows/ContactWindow"
 import DossierWindow from "./windows/DossierWindow"
+import RadarDefense from "./RadarDefense"
 import { getRandomMessage, processMessage } from "../data/missionLogMessages"
 
 type PanelId =
   | 'terminal' | 'about' | 'projects' | 'skills'
-  | 'resume' | 'contact' | 'missionLog' | 'dossier'
+  | 'resume' | 'contact' | 'missionLog' | 'dossier' | 'defend'
 
-const PANELS: Record<Exclude<PanelId, 'terminal'>, React.ComponentType> = {
+const PANELS: Record<Exclude<PanelId, 'terminal' | 'defend'>, React.ComponentType> = {
   about: AboutWindow,
   projects: ProjectsWindow,
   skills: SkillsWindow,
@@ -47,12 +48,19 @@ function Ticker() {
 export default function HandheldDevice() {
   const [panel, setPanel] = useState<PanelId>('terminal')
 
+  // `defend` command fires this event
+  useEffect(() => {
+    const start = () => setPanel('defend')
+    window.addEventListener('granof:defend', start)
+    return () => window.removeEventListener('granof:defend', start)
+  }, [])
+
   // Terminal commands (about, projects, decrypt→dossier…) switch panels here.
   const openWindow = (windowId: string) => {
     if (windowId in PANELS) setPanel(windowId as PanelId)
   }
 
-  const Panel = panel === 'terminal' ? null : PANELS[panel]
+  const Panel = panel === 'terminal' || panel === 'defend' ? null : PANELS[panel]
 
   return (
     <div className="handheld">
@@ -66,6 +74,11 @@ export default function HandheldDevice() {
         <div className={panel === 'terminal' ? 'handheld-panel' : 'handheld-panel hidden'}>
           <Terminal onOpenWindow={openWindow} />
         </div>
+        {panel === 'defend' && (
+          <div className="handheld-panel">
+            <RadarDefense onExit={() => setPanel('terminal')} />
+          </div>
+        )}
         {Panel && (
           <div className="handheld-panel">
             <Panel />

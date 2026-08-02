@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react"
 import { useTerminalEngine } from "../hooks/useTerminalEngine"
 import { loadHistory, saveHistory } from "../lib/terminal/history"
 import { keyClick } from "../lib/sound"
+import { currentRank } from "../lib/commanderProfile"
 
 interface TerminalProps {
   onOpenWindow?: (windowId: string) => void
@@ -14,6 +15,16 @@ function commonPrefix(items: string[]): string {
     while (!item.startsWith(prefix)) prefix = prefix.slice(0, -1)
   }
   return prefix
+}
+
+function RankChip() {
+  const [rank, setRank] = useState(currentRank())
+  useEffect(() => {
+    const update = () => setRank(currentRank())
+    window.addEventListener('granof:xp', update)
+    return () => window.removeEventListener('granof:xp', update)
+  }, [])
+  return <span className="rank-chip">{rank}</span>
 }
 
 export default function Terminal({ onOpenWindow }: TerminalProps) {
@@ -89,6 +100,7 @@ export default function Terminal({ onOpenWindow }: TerminalProps) {
       <div className="terminal-header">
         <div className="led green" />
         <span>COMMAND TERMINAL</span>
+        <RankChip />
       </div>
       <div className="terminal-content">
         <div className="terminal-output" ref={outputRef}>

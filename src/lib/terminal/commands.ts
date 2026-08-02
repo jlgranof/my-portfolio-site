@@ -11,6 +11,7 @@ import {
 } from './filesystem'
 import { tryDecrypt } from './cipher'
 import { THEMES } from '../theme'
+import { getData, currentRank, nextRank, ACHIEVEMENTS } from '../commanderProfile'
 import type { Theme } from '../theme'
 
 export interface TermState {
@@ -26,6 +27,7 @@ export interface ExecResult {
   unlockDossier?: boolean
   theme?: Theme
   sound?: boolean
+  startDefense?: boolean
 }
 
 export const BANNER = [
@@ -188,6 +190,47 @@ const COMMANDS: Command[] = [
   { name: 'whoami', description: 'Identify operator', usage: 'whoami', category: 'system', run: () => ({ lines: ['visitor — clearance: PROVISIONAL', "(the station belongs to Jeff Granof; type 'about')"] }) },
   { name: 'sudo', description: '', usage: 'sudo <anything>', category: 'system', hidden: true, run: () => ({ lines: ['visitor is not in the sudoers file.', 'This incident will be reported to STATION COMMAND.'] }) },
   { name: 'coffee', description: '', usage: 'coffee', category: 'system', hidden: true, run: () => ({ lines: ['DISPENSING... ☕', 'CAFFEINE LEVELS NOMINAL. CARRY ON, COMMANDER.'] }) },
+  {
+    name: 'defend',
+    description: 'Engage radar defense',
+    usage: 'defend',
+    category: 'system',
+    run: () => ({
+      lines: ['RADAR DEFENSE ENGAGED. HOSTILES INBOUND.', 'Tap the radar to intercept. Do not shoot friendlies.'],
+      startDefense: true,
+    }),
+  },
+  {
+    name: 'rank',
+    description: 'Show your service record',
+    usage: 'rank',
+    category: 'system',
+    run: () => {
+      const d = getData()
+      const next = nextRank()
+      return {
+        lines: [
+          `RANK: ${currentRank()}`,
+          `XP: ${d.xp}${next ? ` — next: ${next[0]} at ${next[1]}` : ' — maximum rank achieved'}`,
+          `ACHIEVEMENTS: ${d.achievements.length}/${Object.keys(ACHIEVEMENTS).length} (type 'achievements')`,
+        ],
+      }
+    },
+  },
+  {
+    name: 'achievements',
+    description: 'List achievements',
+    usage: 'achievements',
+    category: 'system',
+    run: () => {
+      const earned = getData().achievements
+      return {
+        lines: Object.entries(ACHIEVEMENTS).map(
+          ([id, label]) => `${earned.includes(id) ? '[x]' : '[ ]'} ${label}`,
+        ),
+      }
+    },
+  },
   {
     name: 'theme',
     description: 'Set phosphor theme',
