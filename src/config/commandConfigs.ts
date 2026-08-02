@@ -42,8 +42,8 @@ export const COMMAND_CONFIGS: Record<string, CommandConfig> = {
     action: 'openWindow',
     target: 'skills'
   },
-  missionLog: {
-    name: 'missionLog',
+  missionlog: {
+    name: 'missionlog',
     description: 'Open mission log',
     action: 'openWindow',
     target: 'missionLog'
