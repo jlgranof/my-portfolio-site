@@ -1,69 +1,39 @@
-# React + TypeScript + Vite
+# Mission Control
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+My personal site — [jeffgranof.com](https://jeffgranof.com)
 
-Currently, two official plugins are available:
+Instead of another scroll-past-my-headshot portfolio, I built a retro mission-control station. There's a CRT monitor, a command terminal, a radar that's more than it looks, and a mission log that never shuts up. You want to know about me? Type `help` and go find out.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Things to try
 
-## Expanding the ESLint configuration
+- `about`, `projects`, `resume`, `contact` — the actual portfolio part, served in draggable windows
+- `ls`, `cd`, `cat` — poke around the station's filesystem. Read the logs. Especially the logs.
+- `defend` — the radar is playable. Tapping it three times fast works too.
+- `theme amber` — if green phosphor isn't your thing
+- `sound on` — beeps, obviously
+- `rank` — yes, you earn XP for snooping around my website. Yes, there are achievements.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+There's an encrypted archive in `/classified`. Everything you need to crack it is on the station. If you crack it, you get the file on me they don't want you to see.
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+(And if you skip all that and just find the keys in this repo's source instead — honestly, respect. That counts.)
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## On phones
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Small screens get the FIELD OPS UNIT — a handheld version of the same station. Same terminal, same secrets, buttons instead of windows.
+
+## Stack
+
+React 19 + TypeScript + Vite. No UI libraries, no CSS frameworks, no backend — just components, hand-rolled CSS, and localStorage. Tests with Vitest. Pushes to `main` lint, test, build, and deploy to GitHub Pages via Actions.
+
+```bash
+npm install
+npm run dev     # boot the station
+npm test        # 35 tests, mostly on the terminal/game/cipher logic
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Why
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Because a portfolio should prove something, and a PDF proves you own a word processor. This proves I'll happily over-engineer a personal website with a virtual filesystem, a Caesar cipher puzzle, and a Missile Command clone — and ship it with CI and a test suite anyway.
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+— Jeff
