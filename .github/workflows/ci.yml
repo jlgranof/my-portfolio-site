@@ -28,12 +28,12 @@ jobs:
       - run: npm test
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/gh-pages'
         with:
           path: dist
 
   deploy:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/gh-pages'
     needs: check
     runs-on: ubuntu-latest
     environment:
