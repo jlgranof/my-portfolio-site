@@ -84,24 +84,31 @@ export default function ResizableWindow({
 
         switch (resizeHandle) {
           case 'se':
-            newWidth = Math.max(MIN_W, e.clientX - rect.left)
-            newHeight = Math.max(MIN_H, e.clientY - rect.top)
+            // Clamp growth against the container's right/bottom edge before
+            // constrainPosition runs, otherwise the next pointermove recomputes
+            // size from a shifted rect and the window "walks" while inflating.
+            newWidth = Math.max(MIN_W, Math.min(e.clientX - rect.left, containerRect.width - position.x))
+            newHeight = Math.max(MIN_H, Math.min(e.clientY - rect.top, containerRect.height - position.y))
             break
           case 'sw':
             newWidth = Math.max(MIN_W, rect.right - e.clientX)
-            newHeight = Math.max(MIN_H, e.clientY - rect.top)
+            newHeight = Math.max(MIN_H, Math.min(e.clientY - rect.top, containerRect.height - position.y))
             newX = position.x + (position.width - newWidth)
+            newX = Math.max(0, newX)
             break
           case 'ne':
-            newWidth = Math.max(MIN_W, e.clientX - rect.left)
+            newWidth = Math.max(MIN_W, Math.min(e.clientX - rect.left, containerRect.width - position.x))
             newHeight = Math.max(MIN_H, rect.bottom - e.clientY)
             newY = position.y + (position.height - newHeight)
+            newY = Math.max(0, newY)
             break
           case 'nw':
             newWidth = Math.max(MIN_W, rect.right - e.clientX)
             newHeight = Math.max(MIN_H, rect.bottom - e.clientY)
             newX = position.x + (position.width - newWidth)
             newY = position.y + (position.height - newHeight)
+            newX = Math.max(0, newX)
+            newY = Math.max(0, newY)
             break
         }
 
