@@ -7,16 +7,18 @@
   padding: 12px;
   height: calc(100% - 37px);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  gap: 12px;
 }
 
 .radar-circle {
   position: relative;
-  width: min(100%, 240px);
+  height: 100%;
   aspect-ratio: 1 / 1;
-  height: auto;
-  margin: 0 auto;
+  width: auto;
+  flex: 0 0 auto;
+  margin: 0;
   border-radius: 50%;
   border: 1px solid var(--panel-border);
   background: radial-gradient(circle, rgba(108,255,218,.05) 0%, transparent 70%);
@@ -146,7 +148,8 @@
 }
 
 .radar-stats {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   margin-top: 8px;
   display: flex;
   flex-direction: column;
