@@ -1,20 +1,19 @@
 import Terminal from "./Terminal"
 import WindowManager from "./WindowManager"
+import type { TerminalEngine } from "../hooks/useTerminalEngine"
 
 interface RightPanelProps {
+  engine: TerminalEngine
   activeWindows: string[]
-  onOpenWindow: (windowId: string) => void
   onCloseWindow: (windowId: string) => void
 }
 
-export default function RightPanel({ activeWindows, onOpenWindow, onCloseWindow }: RightPanelProps) {
+export default function RightPanel({ engine, activeWindows, onCloseWindow }: RightPanelProps) {
   return (
     <div className="right-panel">
-      <Terminal 
-        onOpenWindow={onOpenWindow}
-      />
+      <Terminal engine={engine} />
       <div className="window-container">
-        <WindowManager 
+        <WindowManager
           activeWindows={activeWindows}
           onCloseWindow={onCloseWindow}
         />

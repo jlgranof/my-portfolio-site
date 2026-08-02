@@ -16,10 +16,13 @@ export default function MissionLog() {
   const logRef = useRef<HTMLDivElement>(null)
 
   const pushEntry = (message: string, type: MessageType) => {
-    setLogEntries(prev => [
-      ...prev,
-      { id: idRef.current++, timestamp: new Date().toLocaleTimeString(), message, type },
-    ].slice(-25))
+    const entry: LogEntry = {
+      id: idRef.current++,
+      timestamp: new Date().toLocaleTimeString(),
+      message,
+      type,
+    }
+    setLogEntries(prev => [...prev, entry].slice(-25))
   }
 
   // Ambient stream: routine telemetry every 1.5s

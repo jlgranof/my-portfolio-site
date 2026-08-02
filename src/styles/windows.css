@@ -133,6 +133,36 @@
   border-radius: 0 0 6px 0;
 }
 
+.resize-handle.sw {
+  bottom: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  cursor: sw-resize;
+  background: rgba(108,255,218,.1);
+  border-radius: 0 0 0 6px;
+}
+
+.resize-handle.ne {
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  cursor: ne-resize;
+  background: rgba(108,255,218,.1);
+  border-radius: 0 6px 0 0;
+}
+
+.resize-handle.nw {
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  cursor: nw-resize;
+  background: rgba(108,255,218,.1);
+  border-radius: 6px 0 0 0;
+}
+
 .resize-handle.se::before {
   content: '';
   position: absolute;

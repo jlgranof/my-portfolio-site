@@ -65,6 +65,12 @@ export default function RadarDefense({ onExit }: RadarDefenseProps) {
   }, [])
 
   useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onExit() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onExit])
+
+  useEffect(() => {
     award('defender')
     let raf = 0
     let last = performance.now()

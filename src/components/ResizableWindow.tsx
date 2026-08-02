@@ -65,6 +65,11 @@ export default function ResizableWindow({
 
   useEffect(() => {
     const handlePointerMove = (e: PointerEvent) => {
+      // Mouse released outside the window: no buttons held → end the drag
+      if (e.pointerType === 'mouse' && e.buttons === 0) {
+        handlePointerUp()
+        return
+      }
       const containerRect = containerRef.current?.getBoundingClientRect()
       if (!containerRect) return
 
@@ -126,17 +131,19 @@ export default function ResizableWindow({
     if (isDragging || isResizing) {
       document.addEventListener('pointermove', handlePointerMove)
       document.addEventListener('pointerup', handlePointerUp)
+      document.addEventListener('pointercancel', handlePointerUp)
     }
     return () => {
       document.removeEventListener('pointermove', handlePointerMove)
       document.removeEventListener('pointerup', handlePointerUp)
+      document.removeEventListener('pointercancel', handlePointerUp)
     }
   }, [isDragging, isResizing, resizeHandle, dragOffset, position, onPositionChange, containerRef, constrainPosition])
 
   return (
     <div
       ref={windowRef}
-      className="resizable-window"
+      className={`resizable-window ${isDragging ? 'dragging' : ''} ${isResizing ? 'resizing' : ''}`}
       style={{
         position: 'absolute',
         left: position.x,
@@ -155,7 +162,7 @@ export default function ResizableWindow({
           <div className="led green" />
           <span>{title}</span>
         </div>
-        <button className="window-close" onClick={onClose}>×</button>
+        <button className="window-close" onPointerDown={e => e.stopPropagation()} onClick={onClose}>×</button>
       </div>
       <div className="window-content">{children}</div>
       {(['se', 'sw', 'ne', 'nw'] as const).map(handle => (

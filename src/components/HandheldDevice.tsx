@@ -9,6 +9,8 @@ import ContactWindow from "./windows/ContactWindow"
 import DossierWindow from "./windows/DossierWindow"
 import RadarDefense from "./RadarDefense"
 import { getRandomMessage, processMessage } from "../data/missionLogMessages"
+import { trackWindowOpen } from "../lib/commanderProfile"
+import type { TerminalEngine } from "../hooks/useTerminalEngine"
 
 type PanelId =
   | 'terminal' | 'about' | 'projects' | 'skills'
@@ -45,7 +47,12 @@ function Ticker() {
   return <div className="handheld-ticker">{line}</div>
 }
 
-export default function HandheldDevice() {
+interface HandheldDeviceProps {
+  engine: TerminalEngine
+  openWindowRef: React.MutableRefObject<((windowId: string) => void) | null>
+}
+
+export default function HandheldDevice({ engine, openWindowRef }: HandheldDeviceProps) {
   const [panel, setPanel] = useState<PanelId>('terminal')
 
   // `defend` command fires this event
@@ -60,6 +67,11 @@ export default function HandheldDevice() {
     if (windowId in PANELS) setPanel(windowId as PanelId)
   }
 
+  useEffect(() => {
+    openWindowRef.current = openWindow
+    return () => { openWindowRef.current = null }
+  }, [openWindowRef])
+
   const Panel = panel === 'terminal' || panel === 'defend' ? null : PANELS[panel]
 
   return (
@@ -72,7 +84,7 @@ export default function HandheldDevice() {
       <div className="handheld-screen">
         {/* Terminal stays mounted so its output/state survives panel switches */}
         <div className={panel === 'terminal' ? 'handheld-panel' : 'handheld-panel hidden'}>
-          <Terminal onOpenWindow={openWindow} />
+          <Terminal engine={engine} />
         </div>
         {panel === 'defend' && (
           <div className="handheld-panel">
@@ -90,7 +102,10 @@ export default function HandheldDevice() {
           <button
             key={id}
             className={`handheld-button ${panel === id ? 'active' : ''}`}
-            onClick={() => setPanel(id)}
+            onClick={() => {
+              setPanel(id)
+              if (id !== 'terminal') trackWindowOpen(id)
+            }}
           >
             {label}
           </button>

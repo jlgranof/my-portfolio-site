@@ -95,7 +95,8 @@ Right Panel Components
   color: transparent;
   caret-color: transparent;
   font-family: inherit;
-  font-size: 12px;
+  /* 16px stops iOS Safari's focus auto-zoom; the input is invisible anyway */
+  font-size: 16px;
 }
 
 .terminal-text {

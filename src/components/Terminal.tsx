@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react"
-import { useTerminalEngine } from "../hooks/useTerminalEngine"
+import type { TerminalEngine } from "../hooks/useTerminalEngine"
 import { loadHistory, saveHistory } from "../lib/terminal/history"
 import { keyClick } from "../lib/sound"
 import { currentRank } from "../lib/commanderProfile"
 
 interface TerminalProps {
-  onOpenWindow?: (windowId: string) => void
+  engine: TerminalEngine
 }
 
 /** Longest common prefix of a list of candidates (for partial tab-completion). */
@@ -27,8 +27,8 @@ function RankChip() {
   return <span className="rank-chip">{rank}</span>
 }
 
-export default function Terminal({ onOpenWindow }: TerminalProps) {
-  const { output, run, print, completeInput } = useTerminalEngine({ onOpenWindow })
+export default function Terminal({ engine }: TerminalProps) {
+  const { output, run, print, completeInput } = engine
   const [input, setInput] = useState('')
   const [histPos, setHistPos] = useState(-1)
   const historyRef = useRef<string[]>(loadHistory())

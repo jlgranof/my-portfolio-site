@@ -15,12 +15,14 @@ export function soundEnabled(): boolean {
 export function setSoundEnabled(on: boolean): void {
   enabled = on
   try { localStorage.setItem(KEY, on ? '1' : '0') } catch { /* session only */ }
+  try { window.dispatchEvent(new CustomEvent('granof:sound')) } catch { /* non-DOM */ }
 }
 
 function tone(freq: number, duration: number, type: OscillatorType = 'square', gain = 0.02): void {
   if (!enabled) return
   try {
     ctx ??= new AudioContext()
+    if (ctx.state === 'suspended') void ctx.resume()
     const osc = ctx.createOscillator()
     const g = ctx.createGain()
     osc.type = type

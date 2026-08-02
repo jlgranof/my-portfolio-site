@@ -35,30 +35,32 @@ export default function RadarWindow() {
     }
   }
 
+  const targetsRef = useRef<RadarTarget[]>([])
+
   useEffect(() => {
+    // All randomness happens outside setState so the updater stays pure
     const interval = setInterval(() => {
-      setTargets(prev => {
-        let newTargets = prev.map(target =>
-          target.isActive && Math.random() < 0.1
-            ? { ...target, isActive: false }
-            : target
-        )
+      let next = targetsRef.current.map(target =>
+        target.isActive && Math.random() < 0.1
+          ? { ...target, isActive: false }
+          : target
+      )
 
-        if (Math.random() < 0.3 && newTargets.filter(t => t.isActive).length < 5) {
-          newTargets.push({
-            id: idRef.current++,
-            x: Math.random() * 0.8 + 0.1,
-            y: Math.random() * 0.8 + 0.1,
-            size: Math.random() * 2 + 1,
-            intensity: Math.random() * 0.5 + 0.5,
-            isActive: true,
-            type: ['hostile', 'friendly', 'unknown'][Math.floor(Math.random() * 3)] as RadarTarget['type'],
-          })
-        }
+      if (Math.random() < 0.3 && next.filter(t => t.isActive).length < 5) {
+        next.push({
+          id: idRef.current++,
+          x: Math.random() * 0.8 + 0.1,
+          y: Math.random() * 0.8 + 0.1,
+          size: Math.random() * 2 + 1,
+          intensity: Math.random() * 0.5 + 0.5,
+          isActive: true,
+          type: ['hostile', 'friendly', 'unknown'][Math.floor(Math.random() * 3)] as RadarTarget['type'],
+        })
+      }
 
-        newTargets = newTargets.filter(target => target.isActive || Math.random() > 0.05)
-        return newTargets
-      })
+      next = next.filter(target => target.isActive || Math.random() > 0.05)
+      targetsRef.current = next
+      setTargets(next)
     }, 2000)
 
     return () => clearInterval(interval)

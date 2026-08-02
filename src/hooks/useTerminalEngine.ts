@@ -11,6 +11,8 @@ interface UseTerminalEngineProps {
   onOpenWindow?: (windowId: string) => void
 }
 
+export type TerminalEngine = ReturnType<typeof useTerminalEngine>
+
 export function useTerminalEngine({ onOpenWindow }: UseTerminalEngineProps) {
   const [output, setOutput] = useState<string[]>(BANNER)
   const stateRef = useRef<TermState>({ cwd: HOME, dossierUnlocked: loadDossierUnlocked() })
@@ -48,7 +50,7 @@ export function useTerminalEngine({ onOpenWindow }: UseTerminalEngineProps) {
     if (result.lines[0]?.startsWith('Command not found')) errorBeep()
     else if (result.openWindow || result.unlockDossier) confirmBeep()
     if (result.clear) setOutput(BANNER)
-    else setOutput(prev => [...prev, `> ${raw}`, ...result.lines, ''])
+    else setOutput(prev => [...prev, `> ${raw}`, ...result.lines, ''].slice(-500))
   }, [onOpenWindow])
 
   const completeInput = useCallback((input: string) => complete(input, stateRef.current), [])

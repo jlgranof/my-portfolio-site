@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import type { PropsWithChildren } from "react"
 import { soundEnabled, setSoundEnabled } from "../lib/sound"
 
@@ -8,10 +8,12 @@ interface MonitorProps extends PropsWithChildren {
 
 export default function Monitor({ children, className }: MonitorProps) {
   const [sound, setSound] = useState(soundEnabled())
-  const toggleSound = () => {
-    setSoundEnabled(!sound)
-    setSound(!sound)
-  }
+  useEffect(() => {
+    const sync = () => setSound(soundEnabled())
+    window.addEventListener('granof:sound', sync)
+    return () => window.removeEventListener('granof:sound', sync)
+  }, [])
+  const toggleSound = () => setSoundEnabled(!sound)
   return (
     <div className={`monitor ${className || ''}`}>
       <div className="monitor-plaque">
