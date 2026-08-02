@@ -1,0 +1,23 @@
+/************************************************
+Room background styles
+************************************************/
+.room-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    linear-gradient(var(--grid-strong) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-strong) 1px, transparent 1px),
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+    radial-gradient(1200px 800px at 50% 100%, rgba(0,255,170,.06), transparent 60%),
+    var(--bg);
+  background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px, 100% 100%, 100% 100%;
+  animation: roomMove var(--room-animation-duration) linear infinite;
+}
+
+@keyframes roomMove{
+  to{
+    background-position: 80px 80px, 80px 80px, 16px 16px, 16px 16px, 0 0, 0 0;
+  }
+}

@@ -1,0 +1,201 @@
+/* Radar Window */
+.radar-window {
+  height: 200px;
+}
+
+.radar-display {
+  padding: 12px;
+  height: calc(100% - 37px);
+  display: flex;
+  flex-direction: column;
+}
+
+.radar-circle {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  border-radius: 50%;
+  border: 1px solid var(--panel-border);
+  background: radial-gradient(circle, rgba(108,255,218,.05) 0%, transparent 70%);
+  overflow: hidden;
+}
+
+.radar-sweep {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--phosphor), transparent);
+  transform-origin: left center;
+  animation: radarSweep 3s linear infinite;
+}
+
+@keyframes radarSweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.radar-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.grid-line {
+  position: absolute;
+  background: var(--panel-border);
+}
+
+.grid-line.horizontal {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+.grid-line.vertical {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-50%);
+}
+
+.grid-circle {
+  position: absolute;
+  border: 1px solid var(--panel-border);
+  border-radius: 50%;
+}
+
+.grid-circle.circle-1 {
+  top: 25%;
+  left: 25%;
+  right: 25%;
+  bottom: 25%;
+}
+
+.grid-circle.circle-2 {
+  top: 12.5%;
+  left: 12.5%;
+  right: 12.5%;
+  bottom: 12.5%;
+}
+
+.grid-circle.circle-3 {
+  top: 6.25%;
+  left: 6.25%;
+  right: 6.25%;
+  bottom: 6.25%;
+}
+
+.radar-targets {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.radar-target {
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 8px currentColor;
+  animation: targetPulse 2s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+.radar-target.active {
+  animation: targetPulse 1.5s ease-in-out infinite;
+}
+
+.radar-target.inactive {
+  opacity: 0.3;
+  animation: targetFade 3s ease-in-out infinite;
+}
+
+.radar-target.hostile {
+  box-shadow: 0 0 12px var(--danger);
+}
+
+.radar-target.friendly {
+  box-shadow: 0 0 12px #6cffda;
+}
+
+.radar-target.unknown {
+  box-shadow: 0 0 12px #ffcc55;
+}
+
+@keyframes targetPulse {
+  0%, 100% { 
+    opacity: 0.6; 
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% { 
+    opacity: 1; 
+    transform: translate(-50%, -50%) scale(1.3);
+  }
+}
+
+@keyframes targetFade {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.1; }
+}
+
+.radar-stats {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+}
+
+.stat .value {
+  color: var(--phosphor);
+  font-weight: 600;
+}
+
+.target-types {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--panel-border);
+}
+
+.target-type {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 8px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.target-type .indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.target-type .indicator.hostile {
+  background: var(--danger);
+  box-shadow: 0 0 4px var(--danger);
+}
+
+.target-type .indicator.friendly {
+  background: #6cffda;
+  box-shadow: 0 0 4px #6cffda;
+}
+
+.target-type .indicator.unknown {
+  background: #ffcc55;
+  box-shadow: 0 0 4px #ffcc55;
+}

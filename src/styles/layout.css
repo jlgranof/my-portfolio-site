@@ -1,0 +1,74 @@
+/************************************************
+Mission Control Layout
+************************************************/
+.mission-control {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+}
+
+.left-panel {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.right-panel {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.window-container {
+  position: relative;
+  flex: 1;
+  margin-top: 2px;
+  background: rgba(0,0,0,.1);
+  border: 1px solid rgba(108,255,218,.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+
+
+
+
+
+
+
+/************************************************
+Left Panel Components
+************************************************/
+.name-plate,
+.radar-window,
+.telemetry-window {
+  background: var(--window-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  box-shadow: 
+    inset 0 0 0 1px rgba(108,255,218,.05),
+    0 4px 12px rgba(0,0,0,.3);
+}
+
+.window-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--panel-border);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.window-header .led {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+}

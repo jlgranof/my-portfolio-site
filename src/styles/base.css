@@ -1,0 +1,69 @@
+/************************************************
+Base styles 
+************************************************/
+:root{
+  --bg: #020507;
+  --grid: rgba(64, 255, 196, .06);
+  --grid-strong: rgba(64, 255, 196, .12);
+  --phosphor: #6cffda;
+  --amber: #ffcc55;
+  --muted: #9ad5c6;
+  --bezel: #0d1117;
+  --bezel-light: #1a212b;
+  
+  /* Animation timings */
+  --room-animation-duration: 10s;
+  --blink-animation-duration: 1.2s;
+  --noise-animation-duration: 1s;
+  
+  /* Layout measurements */
+  --monitor-max-width: 1100px;
+  --monitor-padding: 24px;
+  --monitor-border-radius: 22px;
+  --screen-border-radius: 14px;
+  
+  /* LED and hardware measurements */
+  --led-size: 10px;
+  --screw-size: 14px;
+  --status-gap: 8px;
+  
+  /* Mission control specific */
+  --panel-border: rgba(108,255,218,.15);
+  --window-bg: rgba(6,16,21,.95);
+  --window-border: rgba(108,255,218,.2);
+  --terminal-bg: rgba(0,0,0,.8);
+
+  /* Semantic status colors */
+  --danger: #ff6b6b;
+  --info-blue: #4dabf7;
+  --mission-failed: #ae3ec9;
+  --alert-red: #ff0000;
+}
+
+*{
+  box-sizing: border-box;
+}
+
+html, body, #root{
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--phosphor);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "IBM Plex Mono", monospace;
+}
+
+a{
+  color: var(--amber);
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(255,204,85,.4);
+  transition: border-bottom-color 0.2s ease;
+}
+
+a:hover{
+  border-bottom-color: #ffe08c;
+}

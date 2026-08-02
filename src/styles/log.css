@@ -1,0 +1,164 @@
+/* Mission Log Window */
+.mission-log {
+  flex: 1;
+  min-height: 120px;
+  background: var(--window-bg);
+  border: 1px solid var(--window-border);
+  border-radius: 8px;
+  box-shadow: 
+    inset 0 0 0 1px rgba(108,255,218,.05),
+    0 4px 12px rgba(0,0,0,.3);
+}
+
+.mission-log-content {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 37px);
+}
+
+.log-container {
+  flex: 1;
+  overflow-y: auto;
+  background: rgba(0,0,0,.2);
+  border: 1px solid var(--panel-border);
+  border-radius: 3px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-height: 120px;
+}
+
+.log-entry {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  background: rgba(0,0,0,.3);
+  border-left: 2px solid;
+  border-radius: 2px;
+  font-size: 8px;
+  animation: logFadeIn 0.5s ease-out;
+  position: relative;
+}
+
+.log-entry.info {
+  background: rgba(154,213,198,.05);
+}
+
+.log-entry.success {
+  background: rgba(108,255,218,.05);
+}
+
+.log-entry.system_warning {
+  background: rgba(255,107,107,.05);
+}
+
+.log-entry.mission_success {
+  background: rgba(77,171,247,.05);
+}
+
+.log-entry.mission_failed {
+  background: rgba(174,62,201,.05);
+}
+
+.log-entry.alert {
+  background: rgba(255,0,0,.1);
+  animation: logFadeIn 0.5s ease-out, alertFlash 0.8s ease-in-out infinite;
+  font-weight: bold;
+  text-transform: uppercase;
+  border-left: 3px solid var(--alert-red) !important;
+  box-shadow: 
+    0 0 8px rgba(255,0,0,.4),
+    inset 0 0 10px rgba(255,0,0,.05);
+  position: relative;
+}
+
+.log-entry.alert::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,0,0,.2), transparent);
+  animation: alertSweep 2s ease-in-out infinite;
+}
+
+.log-entry.alert .log-message {
+  color: #ff4444 !important;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 4px rgba(255,0,0,.6);
+}
+
+.log-entry.alert .log-timestamp {
+  color: #ff8888 !important;
+  font-weight: 600;
+  text-shadow: 0 0 3px rgba(255,0,0,.4);
+}
+
+.log-timestamp {
+  color: var(--muted);
+  font-size: 7px;
+  flex-shrink: 0;
+  font-family: monospace;
+}
+
+.log-message {
+  flex: 1;
+  font-weight: 500;
+}
+
+.log-indicator {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: logBlink 1.5s ease-in-out infinite;
+}
+
+@keyframes logFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes logBlink {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes alertFlash {
+  0%, 100% { 
+    background: rgba(255,0,0,.1);
+    box-shadow: 
+      0 0 8px rgba(255,0,0,.4),
+      inset 0 0 10px rgba(255,0,0,.05);
+  }
+  50% { 
+    background: rgba(255,0,0,.15);
+    box-shadow: 
+      0 0 12px rgba(255,0,0,.6),
+      0 0 20px rgba(255,0,0,.3),
+      inset 0 0 15px rgba(255,0,0,.1);
+  }
+}
+
+@keyframes alertShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-1px); }
+  75% { transform: translateX(1px); }
+}
+
+@keyframes alertSweep {
+  0% { left: -100%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
+}

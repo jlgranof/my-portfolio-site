@@ -1,0 +1,158 @@
+/* Window Manager */
+.window-manager {
+  position: relative;
+  flex: 1;
+}
+
+.resizable-window {
+  background: var(--window-bg);
+  border: 1px solid var(--window-border);
+  border-radius: 6px;
+  box-shadow: 
+    0 4px 20px rgba(0,0,0,.3),
+    inset 0 0 0 1px rgba(108,255,218,.08);
+  overflow: hidden;
+  transition: box-shadow 0.15s ease;
+}
+
+.resizable-window.dragging {
+  box-shadow: 
+    0 8px 30px rgba(0,0,0,.5),
+    inset 0 0 0 1px rgba(108,255,218,.15);
+}
+
+.resizable-window.resizing {
+  box-shadow: 
+    0 8px 30px rgba(0,0,0,.5),
+    inset 0 0 0 1px rgba(108,255,218,.15);
+}
+
+.window-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(0,0,0,.4);
+  border-bottom: 1px solid var(--window-border);
+  cursor: move;
+  user-select: none;
+}
+
+.window-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--phosphor);
+}
+
+.window-title .led {
+  width: 8px;
+  height: 8px;
+}
+
+.window-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.window-close:hover {
+  background: rgba(255,0,0,.2);
+  color: var(--danger);
+}
+
+.window-content {
+  height: calc(100% - 37px);
+  overflow: auto;
+  padding: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--panel-border) transparent;
+}
+
+.window-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.window-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.window-content::-webkit-scrollbar-thumb {
+  background: var(--panel-border);
+  border-radius: 3px;
+}
+
+.window-content::-webkit-scrollbar-thumb:hover {
+  background: var(--phosphor);
+}
+
+/* Resize Handles */
+.resize-handles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.resize-handle {
+  position: absolute;
+  pointer-events: all;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 1001;
+}
+
+.resize-handle.se {
+  bottom: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  cursor: se-resize;
+  background: rgba(108,255,218,.1);
+  border-radius: 0 0 6px 0;
+}
+
+.resize-handle.se::before {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-top: 6px solid var(--phosphor);
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.resize-handle.se:hover {
+  background: rgba(108,255,218,.2);
+}
+
+.resize-handle.se:hover::before {
+  opacity: 1;
+}
+
+/* Show handle on hover */
+.resizable-window:hover .resize-handle {
+  opacity: 1;
+}
+
+.resizable-window.dragging .resize-handle,
+.resizable-window.resizing .resize-handle {
+  opacity: 1;
+}
