@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import ResizableWindow from "./ResizableWindow"
 import { WINDOW_CONFIGS } from "../config/windowConfigs"
 import type { WindowPosition } from "../config/windowConfigs"
+import { cascadePosition } from "../lib/windowPlacement"
 
 interface WindowManagerProps {
   activeWindows: string[]
@@ -9,64 +10,48 @@ interface WindowManagerProps {
 }
 
 export default function WindowManager({ activeWindows, onCloseWindow }: WindowManagerProps) {
-  // Initialize window positions from config
-  const [windowPositions, setWindowPositions] = useState<Record<string, WindowPosition>>(() => {
-    const positions: Record<string, WindowPosition> = {}
-    Object.values(WINDOW_CONFIGS).forEach(config => {
-      positions[config.id] = config.defaultPosition
-    })
-    return positions
-  })
-
-  // Initialize window z-indexes from config
-  const [windowZIndexes, setWindowZIndexes] = useState<Record<string, number>>(() => {
-    const zIndexes: Record<string, number> = {}
-    Object.values(WINDOW_CONFIGS).forEach(config => {
-      zIndexes[config.id] = config.defaultZIndex
-    })
-    return zIndexes
-  })
-
-  const [nextZIndex, setNextZIndex] = useState(Math.max(...Object.values(WINDOW_CONFIGS).map(c => c.defaultZIndex)) + 1)
-  const [previousActiveWindows, setPreviousActiveWindows] = useState<string[]>([])
+  const [windowPositions, setWindowPositions] = useState<Record<string, WindowPosition>>({})
+  const [windowZIndexes, setWindowZIndexes] = useState<Record<string, number>>({})
+  const containerRef = useRef<HTMLDivElement>(null)
+  const zCounterRef = useRef(100)
+  const openCounterRef = useRef(0)
+  const prevActiveRef = useRef<string[]>([])
 
   const updateWindowPosition = (windowId: string, position: Partial<WindowPosition>) => {
     setWindowPositions(prev => ({
       ...prev,
-      [windowId]: { ...prev[windowId], ...position }
+      [windowId]: { ...prev[windowId], ...position },
     }))
   }
 
   const bringWindowToFront = (windowId: string) => {
-    setWindowZIndexes(prev => ({
-      ...prev,
-      [windowId]: nextZIndex
-    }))
-    setNextZIndex(prev => prev + 1)
+    zCounterRef.current += 1
+    const z = zCounterRef.current
+    setWindowZIndexes(prev => ({ ...prev, [windowId]: z }))
   }
 
-  // Effect to bring new windows to front when they're opened
   useEffect(() => {
-    // Find windows that are newly active (not in previousActiveWindows)
-    const newWindows = activeWindows.filter(windowId => 
-      windowId !== 'terminal' && !previousActiveWindows.includes(windowId)
+    const newWindows = activeWindows.filter(
+      id => id !== 'terminal' && !prevActiveRef.current.includes(id),
     )
-    
-    // Bring new windows to front
+    prevActiveRef.current = activeWindows
+
     newWindows.forEach(windowId => {
+      const config = WINDOW_CONFIGS[windowId]
+      if (!config) return
+      const { width, height } = config.defaultPosition
+      const pos = cascadePosition(openCounterRef.current, { width, height })
+      openCounterRef.current += 1
+      setWindowPositions(prev => ({ ...prev, [windowId]: pos }))
       bringWindowToFront(windowId)
     })
-    
-    // Update previous active windows
-    setPreviousActiveWindows(activeWindows)
-  }, [activeWindows, previousActiveWindows])
+  }, [activeWindows])
 
   const renderWindow = (windowId: string) => {
     const config = WINDOW_CONFIGS[windowId]
-    if (!config) return null
-
     const position = windowPositions[windowId]
-    const zIndex = windowZIndexes[windowId]
+    if (!config || !position) return null
+
     const WindowComponent = config.component
 
     return (
@@ -74,7 +59,8 @@ export default function WindowManager({ activeWindows, onCloseWindow }: WindowMa
         key={windowId}
         title={config.title}
         position={position}
-        zIndex={zIndex}
+        zIndex={windowZIndexes[windowId] ?? config.defaultZIndex}
+        containerRef={containerRef}
         onPositionChange={(pos) => updateWindowPosition(windowId, pos)}
         onClose={() => onCloseWindow(windowId)}
         onClick={() => bringWindowToFront(windowId)}
@@ -85,11 +71,8 @@ export default function WindowManager({ activeWindows, onCloseWindow }: WindowMa
   }
 
   return (
-    <div className="window-manager">
-      {activeWindows
-        .filter(id => id !== 'terminal')
-        .map(renderWindow)
-      }
+    <div className="window-manager" ref={containerRef}>
+      {activeWindows.filter(id => id !== 'terminal').map(renderWindow)}
     </div>
   )
 }

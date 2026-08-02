@@ -1,23 +1,28 @@
-import { useState, useRef, useEffect, type PropsWithChildren } from "react"
+import { useState, useRef, useEffect, useCallback, type PropsWithChildren } from "react"
 import type { WindowPosition } from "../config/windowConfigs"
 
 interface ResizableWindowProps extends PropsWithChildren {
   title: string
   position: WindowPosition
   zIndex: number
+  containerRef: React.RefObject<HTMLDivElement | null>
   onPositionChange: (position: WindowPosition) => void
   onClose: () => void
   onClick: () => void
 }
 
-export default function ResizableWindow({ 
-  title, 
-  position, 
+const MIN_W = 200
+const MIN_H = 150
+
+export default function ResizableWindow({
+  title,
+  position,
   zIndex,
-  onPositionChange, 
-  onClose, 
+  containerRef,
+  onPositionChange,
+  onClose,
   onClick,
-  children 
+  children,
 }: ResizableWindowProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [isResizing, setIsResizing] = useState(false)
@@ -25,84 +30,32 @@ export default function ResizableWindow({
   const [resizeHandle, setResizeHandle] = useState<string | null>(null)
   const windowRef = useRef<HTMLDivElement>(null)
 
-  const getScreenBounds = () => {
-    // Find the Screen component to get its bounds
-    const screenElement = document.querySelector('.screen')
-    if (screenElement) {
-      const rect = screenElement.getBoundingClientRect()
-      return {
-        screenHeight: rect.height,
-        screenWidth: rect.width,
-        screenLeft: rect.left,
-        screenTop: rect.top
-      }
-    }
-    // Fallback to viewport if screen not found
-    return {
-      screenHeight: document.documentElement.clientHeight,
-      screenWidth: document.documentElement.clientWidth,
-      screenLeft: 0,
-      screenTop: 0
-    }
-  }
+  const constrainPosition = useCallback((x: number, y: number, width: number, height: number) => {
+    const containerRect = containerRef.current?.getBoundingClientRect()
+    if (!containerRect) return { x, y, width, height }
 
-  const constrainPosition = (x: number, y: number, width: number, height: number) => {
-    // Get the window container's boundaries
-    const windowContainerElement = document.querySelector('.window-container')
-    const containerRect = windowContainerElement ? windowContainerElement.getBoundingClientRect() : null
-    
-    if (!containerRect) {
-      return { x, y, width, height }
-    }
-    
-    // Handle size constraints first - if window is too big, shrink it
-    let finalWidth = width
-    let finalHeight = height
-    
-    if (width > containerRect.width) {
-      finalWidth = containerRect.width - 20 // Leave some margin
-    }
-    
-    if (height > containerRect.height) {
-      finalHeight = containerRect.height - 20 // Leave some margin
-    }
-    
-    // Constrain position to container bounds (relative to container)
+    const finalWidth = Math.min(width, containerRect.width - 20)
+    const finalHeight = Math.min(height, containerRect.height - 20)
     const constrainedX = Math.max(0, Math.min(x, containerRect.width - finalWidth))
     const constrainedY = Math.max(0, Math.min(y, containerRect.height - finalHeight))
-    
     return { x: constrainedX, y: constrainedY, width: finalWidth, height: finalHeight }
-  }
+  }, [containerRef])
 
-  const handleMouseDown = (e: React.MouseEvent, type: 'drag' | 'resize', handle?: string) => {
+  const handlePointerDown = (e: React.PointerEvent, type: 'drag' | 'resize', handle?: string) => {
     e.preventDefault()
     e.stopPropagation()
-    
-    // Bring window to front when clicked
     onClick()
-    
+
     if (type === 'drag') {
       setIsDragging(true)
-      
-      // Get the container's position to calculate the correct offset
-      const windowContainerElement = document.querySelector('.window-container')
-      const containerRect = windowContainerElement ? windowContainerElement.getBoundingClientRect() : null
-      
+      const containerRect = containerRef.current?.getBoundingClientRect()
       if (containerRect) {
-        // Calculate offset relative to the container
-        const absoluteWindowX = containerRect.left + position.x
-        const absoluteWindowY = containerRect.top + position.y
-        
         setDragOffset({
-          x: e.clientX - absoluteWindowX,
-          y: e.clientY - absoluteWindowY
+          x: e.clientX - (containerRect.left + position.x),
+          y: e.clientY - (containerRect.top + position.y),
         })
       } else {
-        // Fallback to original calculation
-        setDragOffset({
-          x: e.clientX - position.x,
-          y: e.clientY - position.y
-        })
+        setDragOffset({ x: e.clientX - position.x, y: e.clientY - position.y })
       }
     } else if (type === 'resize' && handle) {
       setIsResizing(true)
@@ -110,41 +63,20 @@ export default function ResizableWindow({
     }
   }
 
-  const handleWindowClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    onClick()
-  }
-
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    const handlePointerMove = (e: PointerEvent) => {
+      const containerRect = containerRef.current?.getBoundingClientRect()
+      if (!containerRect) return
+
       if (isDragging) {
-        const newX = e.clientX - dragOffset.x
-        const newY = e.clientY - dragOffset.y
-        
-        // Get the container's position to convert absolute to relative coordinates
-        const windowContainerElement = document.querySelector('.window-container')
-        const containerRect = windowContainerElement ? windowContainerElement.getBoundingClientRect() : null
-        
-        if (containerRect) {
-          // Convert absolute coordinates to relative coordinates within the container
-          const relativeX = newX - containerRect.left
-          const relativeY = newY - containerRect.top
-          
-          const constrained = constrainPosition(relativeX, relativeY, position.width, position.height)
-          
-          onPositionChange({
-            ...position,
-            x: constrained.x,
-            y: constrained.y,
-            width: constrained.width,
-            height: constrained.height
-          })
-        }
+        const relativeX = e.clientX - dragOffset.x - containerRect.left
+        const relativeY = e.clientY - dragOffset.y - containerRect.top
+        const c = constrainPosition(relativeX, relativeY, position.width, position.height)
+        onPositionChange({ x: c.x, y: c.y, width: c.width, height: c.height })
       } else if (isResizing && resizeHandle) {
         const rect = windowRef.current?.getBoundingClientRect()
         if (!rect) return
 
-        const { screenHeight, screenWidth } = getScreenBounds()
         let newWidth = position.width
         let newHeight = position.height
         let newX = position.x
@@ -152,68 +84,47 @@ export default function ResizableWindow({
 
         switch (resizeHandle) {
           case 'se':
-            // Bottom-right: expand width and height, but don't go beyond screen
-            newWidth = Math.max(200, Math.min(screenWidth - newX, e.clientX - rect.left))
-            newHeight = Math.max(150, Math.min(screenHeight - newY, e.clientY - rect.top))
+            newWidth = Math.max(MIN_W, e.clientX - rect.left)
+            newHeight = Math.max(MIN_H, e.clientY - rect.top)
             break
           case 'sw':
-            // Bottom-left: expand width leftward and height downward
-            newWidth = Math.max(200, Math.min(newX + newWidth, rect.right - e.clientX))
-            newHeight = Math.max(150, Math.min(screenHeight - newY, e.clientY - rect.top))
-            newX = Math.max(0, Math.min(newX + newWidth - 200, e.clientX))
+            newWidth = Math.max(MIN_W, rect.right - e.clientX)
+            newHeight = Math.max(MIN_H, e.clientY - rect.top)
+            newX = position.x + (position.width - newWidth)
             break
           case 'ne':
-            // Top-right: expand width rightward and height upward
-            newWidth = Math.max(200, Math.min(screenWidth - newX, e.clientX - rect.left))
-            newHeight = Math.max(150, Math.min(newY + newHeight, rect.bottom - e.clientY))
-            newY = Math.max(0, Math.min(newY + newHeight - 150, e.clientY))
+            newWidth = Math.max(MIN_W, e.clientX - rect.left)
+            newHeight = Math.max(MIN_H, rect.bottom - e.clientY)
+            newY = position.y + (position.height - newHeight)
             break
           case 'nw':
-            // Top-left: expand width leftward and height upward
-            newWidth = Math.max(200, Math.min(newX + newWidth, rect.right - e.clientX))
-            newHeight = Math.max(150, Math.min(newY + newHeight, rect.bottom - e.clientY))
-            newX = Math.max(0, Math.min(newX + newWidth - 200, e.clientX))
-            newY = Math.max(0, Math.min(newY + newHeight - 150, e.clientY))
+            newWidth = Math.max(MIN_W, rect.right - e.clientX)
+            newHeight = Math.max(MIN_H, rect.bottom - e.clientY)
+            newX = position.x + (position.width - newWidth)
+            newY = position.y + (position.height - newHeight)
             break
         }
 
-        // Get the container's position to convert absolute to relative coordinates
-        const windowContainerElement = document.querySelector('.window-container')
-        const containerRect = windowContainerElement ? windowContainerElement.getBoundingClientRect() : null
-        
-        if (containerRect) {
-          // Convert absolute coordinates to relative coordinates within the container
-          const relativeX = newX - containerRect.left
-          const relativeY = newY - containerRect.top
-          
-          // Apply constraints to ensure window stays within container bounds
-          const constrained = constrainPosition(relativeX, relativeY, newWidth, newHeight)
-          onPositionChange({ 
-            x: constrained.x, 
-            y: constrained.y, 
-            width: constrained.width, 
-            height: constrained.height 
-          })
-        }
+        const c = constrainPosition(newX, newY, newWidth, newHeight)
+        onPositionChange({ x: c.x, y: c.y, width: c.width, height: c.height })
       }
     }
 
-    const handleMouseUp = () => {
+    const handlePointerUp = () => {
       setIsDragging(false)
       setIsResizing(false)
       setResizeHandle(null)
     }
 
     if (isDragging || isResizing) {
-      document.addEventListener('mousemove', handleMouseMove)
-      document.addEventListener('mouseup', handleMouseUp)
+      document.addEventListener('pointermove', handlePointerMove)
+      document.addEventListener('pointerup', handlePointerUp)
     }
-
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseup', handleMouseUp)
+      document.removeEventListener('pointermove', handlePointerMove)
+      document.removeEventListener('pointerup', handlePointerUp)
     }
-  }, [isDragging, isResizing, resizeHandle, dragOffset, position, onPositionChange])
+  }, [isDragging, isResizing, resizeHandle, dragOffset, position, onPositionChange, containerRef, constrainPosition])
 
   return (
     <div
@@ -225,41 +136,28 @@ export default function ResizableWindow({
         top: position.y,
         width: position.width,
         height: position.height,
-        zIndex: isDragging || isResizing ? 1000 : zIndex
+        zIndex: isDragging || isResizing ? 1000 : zIndex,
       }}
-      onClick={handleWindowClick}
+      onClick={(e) => { e.stopPropagation(); onClick() }}
     >
-      <div 
+      <div
         className="window-titlebar"
-        onMouseDown={(e) => handleMouseDown(e, 'drag')}
+        onPointerDown={(e) => handlePointerDown(e, 'drag')}
       >
         <div className="window-title">
           <div className="led green" />
           <span>{title}</span>
         </div>
-        <button className="window-close" onClick={onClose}>
-          ×
-        </button>
+        <button className="window-close" onClick={onClose}>×</button>
       </div>
-      <div className="window-content">
-        {children}
-      </div>
-      <div 
-        className="resize-handle se"
-        onMouseDown={(e) => handleMouseDown(e, 'resize', 'se')}
-      />
-      <div 
-        className="resize-handle sw"
-        onMouseDown={(e) => handleMouseDown(e, 'resize', 'sw')}
-      />
-      <div 
-        className="resize-handle ne"
-        onMouseDown={(e) => handleMouseDown(e, 'resize', 'ne')}
-      />
-      <div 
-        className="resize-handle nw"
-        onMouseDown={(e) => handleMouseDown(e, 'resize', 'nw')}
-      />
+      <div className="window-content">{children}</div>
+      {(['se', 'sw', 'ne', 'nw'] as const).map(handle => (
+        <div
+          key={handle}
+          className={`resize-handle ${handle}`}
+          onPointerDown={(e) => handlePointerDown(e, 'resize', handle)}
+        />
+      ))}
     </div>
   )
 }
