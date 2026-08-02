@@ -1,0 +1,126 @@
+/* FIELD OPS UNIT — the touch-first handheld shell for small screens */
+
+.handheld-root {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+}
+
+.handheld {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, var(--bezel-light), var(--bezel));
+  border-left: 2px solid rgba(0, 0, 0, 0.5);
+  border-right: 2px solid rgba(0, 0, 0, 0.5);
+}
+
+.handheld-plaque {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 0 8px;
+}
+
+.handheld-plaque .main-text {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--phosphor);
+}
+
+.handheld-plaque .sub-text {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--muted);
+}
+
+.handheld-ticker {
+  font-size: 10px;
+  color: var(--muted);
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.handheld-screen {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  background: var(--window-bg);
+  overflow: hidden;
+}
+
+.handheld-panel {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.handheld-panel.hidden {
+  visibility: hidden;
+}
+
+/* The terminal fills the handheld screen */
+.handheld-panel .terminal {
+  height: 100%;
+  margin-bottom: 0;
+}
+
+/* Window content components render full-bleed in panels */
+.handheld-panel .mission-log {
+  height: 100%;
+}
+
+.handheld-buttons {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  padding-top: 10px;
+}
+
+.handheld-button {
+  padding: 10px 0;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--muted);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.3));
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.handheld-button.active {
+  color: var(--phosphor);
+  border-color: var(--window-border);
+  box-shadow: 0 0 8px var(--panel-border), inset 0 0 6px rgba(0, 0, 0, 0.5);
+}
+
+.handheld-screws .screw {
+  position: absolute;
+}
+
+.handheld-screws .screw.tl { top: 6px; left: 8px; }
+.handheld-screws .screw.tr { top: 6px; right: 8px; }
+
+/* Boot sequence inside the handheld root */
+.handheld-root .boot-sequence {
+  position: absolute;
+  padding: 32px 20px;
+  font-size: 12px;
+}
