@@ -1,47 +1,42 @@
+import { profile } from "../../data/profile"
+
 export default function ContactWindow() {
+  const { email, location, responseTime, social } = profile.contact
   return (
     <div className="contact-window">
       <div className="contact-content">
         <h3>COMMUNICATIONS CHANNEL</h3>
-        
+
         <div className="contact-section">
           <h4>PRIMARY CONTACTS</h4>
           <div className="contact-item">
             <span className="label">EMAIL:</span>
-            <a href="mailto:jeff@example.com" className="value">jeff@example.com</a>
+            {email ? (
+              <a href={`mailto:${email}`} className="value">{email}</a>
+            ) : (
+              <span className="value">[CHANNEL PENDING]</span>
+            )}
           </div>
-          <div className="contact-item">
-            <span className="label">PHONE:</span>
-            <a href="tel:+1234567890" className="value">+1 (234) 567-890</a>
-          </div>
-          <div className="contact-item">
-            <span className="label">LOCATION:</span>
-            <span className="value">San Francisco, CA</span>
-          </div>
+          {location && (
+            <div className="contact-item">
+              <span className="label">LOCATION:</span>
+              <span className="value">{location}</span>
+            </div>
+          )}
         </div>
-        
+
         <div className="contact-section">
           <h4>DIGITAL PRESENCE</h4>
           <div className="social-links">
-            <a href="#" className="social-link">
-              <span className="platform">GitHub</span>
-              <span className="handle">@jeffgranof</span>
-            </a>
-            <a href="#" className="social-link">
-              <span className="platform">LinkedIn</span>
-              <span className="handle">/in/jeffgranof</span>
-            </a>
-            <a href="#" className="social-link">
-              <span className="platform">Twitter</span>
-              <span className="handle">@jeffgranof</span>
-            </a>
-            <a href="#" className="social-link">
-              <span className="platform">Portfolio</span>
-              <span className="handle">jeffgranof.dev</span>
-            </a>
+            {social.map(link => (
+              <a key={link.platform} href={link.url} className="social-link" target="_blank" rel="noreferrer">
+                <span className="platform">{link.platform}</span>
+                <span className="handle">{link.handle}</span>
+              </a>
+            ))}
           </div>
         </div>
-        
+
         <div className="contact-section">
           <h4>AVAILABILITY</h4>
           <div className="availability">
@@ -51,19 +46,18 @@ export default function ContactWindow() {
             </div>
             <div className="response-time">
               <span className="label">RESPONSE TIME:</span>
-              <span className="value">Within 24 hours</span>
+              <span className="value">{responseTime}</span>
             </div>
           </div>
         </div>
-        
-        <div className="contact-actions">
-          <a href="mailto:jeff@example.com" className="contact-btn primary">
-            INITIATE COMMUNICATION
-          </a>
-          <a href="#" className="contact-btn secondary">
-            SCHEDULE BRIEFING
-          </a>
-        </div>
+
+        {email && (
+          <div className="contact-actions">
+            <a href={`mailto:${email}`} className="contact-btn primary">
+              INITIATE COMMUNICATION
+            </a>
+          </div>
+        )}
       </div>
     </div>
   )
