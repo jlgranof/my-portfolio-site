@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 
 interface RadarTarget {
   id: number
@@ -12,57 +12,38 @@ interface RadarTarget {
 
 export default function RadarWindow() {
   const [targets, setTargets] = useState<RadarTarget[]>([])
-  const [activeCount, setActiveCount] = useState(0)
-  const [nextId, setNextId] = useState(1)
+  const idRef = useRef(1)
 
   useEffect(() => {
     const interval = setInterval(() => {
       setTargets(prev => {
-        let newTargets = [...prev]
-        
-        // Randomly deactivate existing targets
-        newTargets = newTargets.map(target => {
-          if (target.isActive && Math.random() < 0.1) {
-            return { ...target, isActive: false }
-          }
-          return target
-        })
+        let newTargets = prev.map(target =>
+          target.isActive && Math.random() < 0.1
+            ? { ...target, isActive: false }
+            : target
+        )
 
-        // Randomly add new targets
         if (Math.random() < 0.3 && newTargets.filter(t => t.isActive).length < 5) {
-          const newTarget: RadarTarget = {
-            id: nextId,
-            x: Math.random() * 0.8 + 0.1, // 10% to 90% of radar
+          newTargets.push({
+            id: idRef.current++,
+            x: Math.random() * 0.8 + 0.1,
             y: Math.random() * 0.8 + 0.1,
             size: Math.random() * 2 + 1,
             intensity: Math.random() * 0.5 + 0.5,
             isActive: true,
-            type: ['hostile', 'friendly', 'unknown'][Math.floor(Math.random() * 3)] as 'hostile' | 'friendly' | 'unknown'
-          }
-          newTargets.push(newTarget)
-          setNextId(prev => prev + 1)
+            type: ['hostile', 'friendly', 'unknown'][Math.floor(Math.random() * 3)] as RadarTarget['type'],
+          })
         }
 
-        // Remove old inactive targets after a delay
-        newTargets = newTargets.filter(target => {
-          if (!target.isActive) {
-            // Keep inactive targets for a few seconds before removing
-            return Math.random() > 0.05
-          }
-          return true
-        })
-
+        newTargets = newTargets.filter(target => target.isActive || Math.random() > 0.05)
         return newTargets
       })
     }, 2000)
 
     return () => clearInterval(interval)
-  }, [nextId])
+  }, [])
 
-  useEffect(() => {
-    const activeTargets = targets.filter(t => t.isActive)
-    setActiveCount(activeTargets.length)
-  }, [targets])
+  const activeCount = targets.filter(t => t.isActive).length
 
   const getTargetColor = (type: string) => {
     switch (type) {
