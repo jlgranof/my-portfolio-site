@@ -83,18 +83,14 @@ const COMMANDS: Command[] = [
           ? { lines: [`${cmd.name} — ${cmd.description}`, `usage: ${cmd.usage}`] }
           : { lines: [`No such command: ${args[0]}`] }
       }
-      const visible = COMMANDS.filter(c => !c.hidden || (c.name === 'dossier' && state.dossierUnlocked))
-      const section = (cat: Command['category'], title: string) => [
-        title,
-        ...visible.filter(c => c.category === cat).map(c => `  ${c.name.padEnd(13)} ${c.description}`),
-      ]
+      const dossier = state.dossierUnlocked ? ' | dossier' : ''
       return {
         lines: [
-          ...section('windows', 'WINDOWS'),
-          ...section('files', 'FILES'),
-          ...section('system', 'SYSTEM'),
+          'WINDOWS  about | projects | skills | resume | contact | missionlog' + dossier,
+          'FILES    ls | cd | pwd | cat <file> | decrypt <file> <key>',
+          'SYSTEM   theme <color> | sound on/off | defend | rank | achievements | clear',
           '',
-          "Tip: 'help <command>' for usage. Tab completes. The archives keep secrets.",
+          "'help <command>' for details. Tab completes. The archives keep secrets.",
         ],
       }
     },

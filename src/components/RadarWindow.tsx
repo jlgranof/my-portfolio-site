@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react"
+import { createPortal } from "react-dom"
 import RadarDefense from "./RadarDefense"
 
 interface RadarTarget {
@@ -81,10 +82,6 @@ export default function RadarWindow() {
         <span>RADAR SCAN</span>
       </div>
       <div className="radar-display">
-        {defending ? (
-          <RadarDefense onExit={() => setDefending(false)} />
-        ) : (
-        <>
         <div className="radar-circle" onPointerDown={handleRadarTap}>
           <div className="radar-sweep" />
           <div className="radar-grid">
@@ -140,9 +137,16 @@ export default function RadarWindow() {
             </div>
           </div>
         </div>
-        </>
-        )}
       </div>
+      {defending && createPortal(
+        <div className="defense-overlay" role="dialog" aria-label="Radar defense">
+          <div className="defense-shell">
+            <div className="defense-title">RADAR DEFENSE — STATION UNDER ATTACK</div>
+            <RadarDefense onExit={() => setDefending(false)} />
+          </div>
+        </div>,
+        document.body,
+      )}
     </div>
   )
 }

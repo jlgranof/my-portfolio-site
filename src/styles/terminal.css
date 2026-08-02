@@ -40,7 +40,9 @@ Right Panel Components
 
 .output-line {
   margin-bottom: 2px;
+  white-space: pre-wrap;
   word-wrap: break-word;
+  min-height: 1em;
 }
 
 .terminal-input-line {

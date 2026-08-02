@@ -1,5 +1,36 @@
 /* Radar Defense minigame */
 
+.defense-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2, 5, 7, 0.8);
+  backdrop-filter: blur(2px);
+}
+
+.defense-shell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: min(92vw, 480px);
+  padding: 18px 18px 14px;
+  background: linear-gradient(180deg, var(--bezel-light), var(--bezel));
+  border: 1px solid var(--window-border);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(108, 255, 218, 0.06);
+}
+
+.defense-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--danger);
+}
+
 .radar-defense {
   display: flex;
   flex-direction: column;
@@ -13,7 +44,7 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
-  max-width: 280px;
+  max-width: 360px;
   font-size: 11px;
   color: var(--phosphor);
   letter-spacing: 1px;
@@ -21,7 +52,7 @@
 
 .defense-canvas-wrap {
   position: relative;
-  width: min(100%, 280px);
+  width: min(100%, 360px);
   aspect-ratio: 1 / 1;
 }
 
