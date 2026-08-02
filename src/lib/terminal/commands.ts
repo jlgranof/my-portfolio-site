@@ -10,6 +10,8 @@ import {
   completePath,
 } from './filesystem'
 import { tryDecrypt } from './cipher'
+import { THEMES } from '../theme'
+import type { Theme } from '../theme'
 
 export interface TermState {
   cwd: string
@@ -22,6 +24,8 @@ export interface ExecResult {
   cwd?: string
   openWindow?: string
   unlockDossier?: boolean
+  theme?: Theme
+  sound?: boolean
 }
 
 export const BANNER = [
@@ -184,6 +188,29 @@ const COMMANDS: Command[] = [
   { name: 'whoami', description: 'Identify operator', usage: 'whoami', category: 'system', run: () => ({ lines: ['visitor — clearance: PROVISIONAL', "(the station belongs to Jeff Granof; type 'about')"] }) },
   { name: 'sudo', description: '', usage: 'sudo <anything>', category: 'system', hidden: true, run: () => ({ lines: ['visitor is not in the sudoers file.', 'This incident will be reported to STATION COMMAND.'] }) },
   { name: 'coffee', description: '', usage: 'coffee', category: 'system', hidden: true, run: () => ({ lines: ['DISPENSING... ☕', 'CAFFEINE LEVELS NOMINAL. CARRY ON, COMMANDER.'] }) },
+  {
+    name: 'theme',
+    description: 'Set phosphor theme',
+    usage: 'theme <green|amber|blue>',
+    category: 'system',
+    run: (args) => {
+      const t = (args[0] ?? '').toLowerCase() as Theme
+      return (THEMES as string[]).includes(t)
+        ? { lines: [`PHOSPHOR RECALIBRATED: ${t.toUpperCase()}`], theme: t }
+        : { lines: ['usage: theme <green|amber|blue>'] }
+    },
+  },
+  {
+    name: 'sound',
+    description: 'Toggle retro sound effects',
+    usage: 'sound <on|off>',
+    category: 'system',
+    run: (args) => {
+      const v = (args[0] ?? '').toLowerCase()
+      if (v !== 'on' && v !== 'off') return { lines: ['usage: sound <on|off>'] }
+      return { lines: [`AUDIO SYSTEMS: ${v.toUpperCase()}`], sound: v === 'on' }
+    },
+  },
   {
     name: 'self-destruct',
     description: '',

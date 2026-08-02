@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react"
-import { getRandomMessage, processMessage } from "../data/missionLogMessages"
+import { getRandomMessage, processMessage, SCRIPTED_ALERTS } from "../data/missionLogMessages"
 import type { MessageType } from "../data/missionLogMessages"
+import { alertTone } from "../lib/sound"
 
 interface LogEntry {
   id: number
@@ -11,32 +12,46 @@ interface LogEntry {
 
 export default function MissionLog() {
   const [logEntries, setLogEntries] = useState<LogEntry[]>([])
-  const [nextEntryId, setNextEntryId] = useState(1)
+  const idRef = useRef(1)
   const logRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    // Add new log entries
-    const logInterval = setInterval(() => {
-      const randomMessage = getRandomMessage()
-      const processedMessage = processMessage(randomMessage)
-      
-      const newEntry: LogEntry = {
-        id: nextEntryId,
-        timestamp: new Date().toLocaleTimeString(),
-        message: processedMessage,
-        type: randomMessage.type
-      }
-      
-      setLogEntries(prev => {
-        const newEntries = [...prev, newEntry]
-        // Keep only last 25 entries
-        return newEntries.slice(-25)
-      })
-      setNextEntryId(prev => prev + 1)
-    }, 1500)
+  const pushEntry = (message: string, type: MessageType) => {
+    setLogEntries(prev => [
+      ...prev,
+      { id: idRef.current++, timestamp: new Date().toLocaleTimeString(), message, type },
+    ].slice(-25))
+  }
 
-    return () => clearInterval(logInterval)
-  }, [nextEntryId])
+  // Ambient stream: routine telemetry every 1.5s
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const msg = getRandomMessage()
+      pushEntry(processMessage(msg), msg.type)
+    }, 1500)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Scripted alerts: rare story beats with a screen-edge glow
+  useEffect(() => {
+    let glowTimeout: ReturnType<typeof setTimeout> | undefined
+    const fire = () => {
+      const message = SCRIPTED_ALERTS[Math.floor(Math.random() * SCRIPTED_ALERTS.length)]
+      pushEntry(message, 'alert')
+      alertTone()
+      document.body.classList.add('alert-active')
+      glowTimeout = setTimeout(() => document.body.classList.remove('alert-active'), 6000)
+    }
+    // First alert after 45-90s, then every 2-4 minutes
+    let timer = setTimeout(function schedule() {
+      fire()
+      timer = setTimeout(schedule, 120_000 + Math.random() * 120_000)
+    }, 45_000 + Math.random() * 45_000)
+    return () => {
+      clearTimeout(timer)
+      clearTimeout(glowTimeout)
+      document.body.classList.remove('alert-active')
+    }
+  }, [])
 
   useEffect(() => {
     if (logRef.current) {
@@ -46,18 +61,14 @@ export default function MissionLog() {
 
   const getTypeColor = (type: MessageType): string => {
     switch (type) {
-      case 'info': return '#9ad5c6' // Normal color
-      case 'success': return '#6cffda' // Green
-      case 'system_warning': return '#ff6b6b' // Red
-      case 'mission_success': return '#4dabf7' // Blue
-      case 'mission_failed': return '#ae3ec9' // Purple
-      case 'alert': return '#ff0000' // Bright red for flashing
-      default: return '#9ad5c6'
+      case 'info': return 'var(--muted)'
+      case 'success': return 'var(--phosphor)'
+      case 'system_warning': return 'var(--danger)'
+      case 'mission_success': return 'var(--info-blue)'
+      case 'mission_failed': return 'var(--mission-failed)'
+      case 'alert': return 'var(--alert-red)'
+      default: return 'var(--muted)'
     }
-  }
-
-  const getTypeClass = (type: MessageType): string => {
-    return `log-entry ${type}`
   }
 
   return (
@@ -69,13 +80,10 @@ export default function MissionLog() {
       <div className="mission-log-content">
         <div className="log-container" ref={logRef}>
           {logEntries.map(entry => (
-            <div 
+            <div
               key={entry.id}
-              className={getTypeClass(entry.type)}
-              style={{ 
-                borderLeftColor: getTypeColor(entry.type),
-                animationDelay: `${entry.id * 0.1}s`
-              }}
+              className={`log-entry ${entry.type}`}
+              style={{ borderLeftColor: getTypeColor(entry.type) }}
             >
               <span className="log-timestamp">[{entry.timestamp}]</span>
               <span className="log-message">{entry.message}</span>

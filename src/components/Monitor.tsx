@@ -1,10 +1,17 @@
+import { useState } from "react"
 import type { PropsWithChildren } from "react"
+import { soundEnabled, setSoundEnabled } from "../lib/sound"
 
 interface MonitorProps extends PropsWithChildren {
   className?: string;
 }
 
 export default function Monitor({ children, className }: MonitorProps) {
+  const [sound, setSound] = useState(soundEnabled())
+  const toggleSound = () => {
+    setSoundEnabled(!sound)
+    setSound(!sound)
+  }
   return (
     <div className={`monitor ${className || ''}`}>
       <div className="monitor-plaque">
@@ -22,6 +29,14 @@ export default function Monitor({ children, className }: MonitorProps) {
       <div className="status" role="status" aria-label="System Status">
         <div className="led green" title="POWER" aria-label="Power Status: Online" />
         <div className="led red" title="COMMS LINK" aria-label="Communication Link: Active" />
+        <button
+          className="sound-toggle"
+          onClick={toggleSound}
+          title={sound ? 'Sound on' : 'Sound off'}
+          aria-label={sound ? 'Disable sound' : 'Enable sound'}
+        >
+          {sound ? '\u266a' : '\u2205'}
+        </button>
       </div>
       <div className="screws">
         <div className="screw tl" />

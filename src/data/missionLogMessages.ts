@@ -99,20 +99,15 @@ export const MISSION_LOG_MESSAGES: LogMessage[] = [
   { message: "INFILTRATION: SUCCESSFUL", type: 'mission_success' },
   { message: "EXFILTRATION: CLEAN EXIT", type: 'mission_success' },
   { message: "INTELLIGENCE GATHERED: {N} FILES", type: 'mission_success', hasRandomNumber: true, numberRange: [10, 100] },
-  { message: "COMMUNICATION INTERCEPTED", type: 'mission_success' },
   { message: "SATELLITE DEPLOYMENT: ORBITAL", type: 'mission_success' },
   { message: "RECONNAISSANCE: AREA MAPPED", type: 'mission_success' },
   { message: "SIGNAL JAMMING: EFFECTIVE", type: 'mission_success' },
   { message: "COUNTER-INTELLIGENCE: SUCCESSFUL", type: 'mission_success' },
   { message: "CYBER OPERATION: COMPLETE", type: 'mission_success' },
-  { message: "PHYSICAL SECURITY: BYPASSED", type: 'mission_success' },
-  { message: "ENCRYPTION BREACH: SUCCESSFUL", type: 'mission_success' },
   { message: "BACKUP RECOVERY: {N}% COMPLETE", type: 'mission_success', hasRandomNumber: true, numberRange: [95, 100] },
   { message: "SYSTEM INTEGRATION: SEAMLESS", type: 'mission_success' },
   { message: "PROTOCOL OVERRIDE: SUCCESSFUL", type: 'mission_success' },
   { message: "ACCESS GRANTED: ADMIN LEVEL", type: 'mission_success' },
-  { message: "FIREWALL PENETRATION: CLEAN", type: 'mission_success' },
-  { message: "DATABASE INFILTRATION: SUCCESSFUL", type: 'mission_success' },
   { message: "NETWORK DOMINANCE: ACHIEVED", type: 'mission_success' },
   { message: "SURVEILLANCE FEED: ACTIVE", type: 'mission_success' },
   { message: "COUNTERMEASURES: NEUTRALIZED", type: 'mission_success' },
@@ -131,11 +126,9 @@ export const MISSION_LOG_MESSAGES: LogMessage[] = [
   { message: "SIGNAL JAMMING: INEFFECTIVE", type: 'mission_failed' },
   { message: "COUNTER-INTELLIGENCE: FAILED", type: 'mission_failed' },
   { message: "CYBER OPERATION: BLOCKED", type: 'mission_failed' },
-  { message: "PHYSICAL SECURITY: IMPASSABLE", type: 'mission_failed' },
   { message: "BACKUP RECOVERY: {N}% FAILED", type: 'mission_failed', hasRandomNumber: true, numberRange: [15, 85] },
   { message: "SYSTEM INTEGRATION: INCOMPATIBLE", type: 'mission_failed' },
   { message: "PROTOCOL OVERRIDE: DENIED", type: 'mission_failed' },
-  { message: "ACCESS REVOKED: SECURITY BREACH", type: 'mission_failed' },
   { message: "DATABASE INFILTRATION: BLOCKED", type: 'mission_failed' },
   { message: "NETWORK DOMINANCE: LOST", type: 'mission_failed' },
   { message: "SURVEILLANCE FEED: DISRUPTED", type: 'mission_failed' },
@@ -148,49 +141,22 @@ export const MISSION_LOG_MESSAGES: LogMessage[] = [
   { message: "DATA EXTRACTION: CORRUPTED", type: 'mission_failed' },
   { message: "TARGET ACQUISITION: MISSED", type: 'mission_failed' },
 
-  // ALERT MESSAGES (ALL CAPS FLASHING RED)
-  { message: "INCOMING ATTACK: MULTIPLE THREATS DETECTED", type: 'alert' },
-  { message: "NATURAL DISASTER: SEISMIC ACTIVITY DETECTED", type: 'alert' },
-  { message: "CYBER ATTACK: FIREWALL BREACH IMMINENT", type: 'alert' },
-  { message: "SYSTEM OVERLOAD: CRITICAL FAILURE", type: 'alert' },
-  { message: "UNAUTHORIZED ACCESS: SECURITY BREACH", type: 'alert' },
-  { message: "VIRUS DETECTED: QUARANTINE REQUIRED", type: 'alert' },
-  { message: "POWER SURGE: EMERGENCY SHUTDOWN", type: 'alert' },
-  { message: "METEOR SHOWER: SHIELD ACTIVATION", type: 'alert' },
-  { message: "SOLAR FLARE: RADIATION SHIELDING", type: 'alert' },
-  { message: "GRAVITY ANOMALY: STABILIZATION REQUIRED", type: 'alert' },
-  { message: "QUANTUM FLUX: REALITY DISTORTION", type: 'alert' },
-  { message: "TIME DILATION: TEMPORAL SHIFT", type: 'alert' },
-  { message: "DIMENSIONAL RIFT: CONTAINMENT BREACH", type: 'alert' },
-  { message: "PLASMA STORM: MAGNETIC SHIELDING", type: 'alert' },
-  { message: "ANTIMATTER DETECTED: EVACUATION PROTOCOL", type: 'alert' },
-  { message: "NEUTRON BOMBARDMENT: RADIATION ALERT", type: 'alert' },
-  { message: "COSMIC RAYS: SHIELDING INSUFFICIENT", type: 'alert' },
-  { message: "BLACK HOLE PROXIMITY: GRAVITY WELL", type: 'alert' },
-  { message: "WORMHOLE ACTIVATION: SPATIAL DISTORTION", type: 'alert' },
-  { message: "DARK MATTER INTERACTION: UNKNOWN EFFECTS", type: 'alert' },
-  { message: "QUANTUM ENTANGLEMENT: REALITY SHIFT", type: 'alert' },
-  { message: "TEMPORAL PARADOX: TIMELINE CORRUPTION", type: 'alert' },
-  { message: "DIMENSIONAL COLLAPSE: SPACE-TIME FRACTURE", type: 'alert' },
-  { message: "REALITY ANOMALY: PHYSICS VIOLATION", type: 'alert' },
-  { message: "EXISTENTIAL THREAT: IMMEDIATE ACTION REQUIRED", type: 'alert' },
-  { message: "UNIVERSAL CONSTANT SHIFT: CALIBRATION LOST", type: 'alert' },
-  { message: "QUANTUM DECOHERENCE: OBSERVER EFFECT", type: 'alert' },
-  { message: "TEMPORAL LOOP: CAUSALITY BREACH", type: 'alert' },
-  { message: "DIMENSIONAL INVASION: HOSTILE ENTITIES", type: 'alert' },
-  { message: "REALITY FABRIC TEAR: SPACE-TIME DAMAGE", type: 'alert' },
-  { message: "EXISTENTIAL CRISIS: REALITY QUESTIONED", type: 'alert' },
-  { message: "UNIVERSAL RESET: ALL SYSTEMS FAILING", type: 'alert' },
-  { message: "QUANTUM CATASTROPHE: PROBABILITY COLLAPSE", type: 'alert' },
-  { message: "TEMPORAL ARMAGEDDON: TIME ITSELF ENDS", type: 'alert' },
-  { message: "DIMENSIONAL APOCALYPSE: REALITY DESTROYED", type: 'alert' },
-  { message: "FINAL ALERT: EXISTENCE TERMINATED", type: 'alert' }
 ]
 
-// Helper function to get random message
+// Helper function to get random message (alerts are scripted, never random)
 export const getRandomMessage = (): LogMessage => {
-  return MISSION_LOG_MESSAGES[Math.floor(Math.random() * MISSION_LOG_MESSAGES.length)]
+  const pool = MISSION_LOG_MESSAGES.filter(m => m.type !== 'alert')
+  return pool[Math.floor(Math.random() * pool.length)]
 }
+
+// Rare scripted story beats — one fires every few minutes; some carry clues.
+export const SCRIPTED_ALERTS: string[] = [
+  'INCOMING TRANSMISSION: UNKNOWN ORIGIN — SIGNAL LOGGED',
+  'ARCHIVE ALERT: ROTATION-3 SEAL DEGRADING — SEE /var/log',
+  'PROXIMITY PING: DEBRIS FIELD PASSING — SHIELDS NOMINAL',
+  'SOLAR ACTIVITY SPIKE: PHOSPHOR CALIBRATION HOLDING',
+  'UPLINK HANDSHAKE FROM STATION COMMAND: ACKNOWLEDGED',
+]
 
 // Helper function to get messages by type
 export const getMessagesByType = (type: MessageType): LogMessage[] => {

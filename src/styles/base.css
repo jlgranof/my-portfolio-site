@@ -79,3 +79,22 @@ a:hover{
     scroll-behavior: auto !important;
   }
 }
+
+/* Phosphor themes — set via `theme <green|amber|blue>` in the terminal */
+:root[data-theme='amber'] {
+  --phosphor: #ffb84d;
+  --muted: #d9c08a;
+  --grid: rgba(255, 196, 64, 0.06);
+  --grid-strong: rgba(255, 196, 64, 0.12);
+  --panel-border: rgba(255, 196, 77, 0.15);
+  --window-border: rgba(255, 196, 77, 0.2);
+}
+
+:root[data-theme='blue'] {
+  --phosphor: #6cd2ff;
+  --muted: #9ac6d5;
+  --grid: rgba(64, 196, 255, 0.06);
+  --grid-strong: rgba(64, 196, 255, 0.12);
+  --panel-border: rgba(108, 210, 255, 0.15);
+  --window-border: rgba(108, 210, 255, 0.2);
+}

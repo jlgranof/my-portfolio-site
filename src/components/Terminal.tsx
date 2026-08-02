@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useTerminalEngine } from "../hooks/useTerminalEngine"
 import { loadHistory, saveHistory } from "../lib/terminal/history"
+import { keyClick } from "../lib/sound"
 
 interface TerminalProps {
   onOpenWindow?: (windowId: string) => void
@@ -43,6 +44,7 @@ export default function Terminal({ onOpenWindow }: TerminalProps) {
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    keyClick()
     const history = historyRef.current
     if (e.key === 'Enter') {
       e.preventDefault()

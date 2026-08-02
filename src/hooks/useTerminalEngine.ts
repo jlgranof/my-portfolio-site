@@ -3,6 +3,8 @@ import { execute, complete, BANNER } from '../lib/terminal/commands'
 import type { TermState } from '../lib/terminal/commands'
 import { HOME } from '../lib/terminal/filesystem'
 import { loadDossierUnlocked, saveDossierUnlocked } from '../lib/terminal/history'
+import { applyTheme } from '../lib/theme'
+import { setSoundEnabled, confirmBeep, errorBeep } from '../lib/sound'
 
 interface UseTerminalEngineProps {
   onOpenWindow?: (windowId: string) => void
@@ -23,7 +25,11 @@ export function useTerminalEngine({ onOpenWindow }: UseTerminalEngineProps) {
       stateRef.current = { ...stateRef.current, dossierUnlocked: true }
       saveDossierUnlocked()
     }
+    if (result.theme) applyTheme(result.theme)
+    if (result.sound !== undefined) setSoundEnabled(result.sound)
     if (result.openWindow) onOpenWindow?.(result.openWindow)
+    if (result.lines[0]?.startsWith('Command not found')) errorBeep()
+    else if (result.openWindow || result.unlockDossier) confirmBeep()
     if (result.clear) setOutput(BANNER)
     else setOutput(prev => [...prev, `> ${raw}`, ...result.lines, ''])
   }, [onOpenWindow])

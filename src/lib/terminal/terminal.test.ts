@@ -76,6 +76,13 @@ describe('commands', () => {
     expect(complete('pr', state())).toEqual(['projects'])
     expect(complete('cat /classified/do', state())).toEqual(['/classified/dossier.enc'])
   })
+  it('theme and sound validate args and return effects', () => {
+    expect(execute('theme amber', state()).theme).toBe('amber')
+    expect(execute('theme purple', state()).lines[0]).toContain('usage')
+    expect(execute('sound on', state()).sound).toBe(true)
+    expect(execute('sound off', state()).sound).toBe(false)
+    expect(execute('sound loud', state()).lines[0]).toContain('usage')
+  })
   it('help hides easter eggs and locked windows', () => {
     const lines = execute('help', state()).lines.join('\n')
     expect(lines).not.toContain('sudo')
