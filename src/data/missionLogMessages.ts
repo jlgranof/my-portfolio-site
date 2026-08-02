@@ -27,6 +27,7 @@ export const MISSION_LOG_MESSAGES: LogMessage[] = [
   // INFO MESSAGES (normal color)
   { message: "SIGNAL STRENGTH: {N}%", type: 'info', hasRandomNumber: true, numberRange: [75, 99] },
   { message: "COMM LINK: ACTIVE", type: 'info' },
+  { message: "ARCHIVE AUDIT: LEGACY ROTATION-3 CIPHER STILL IN SERVICE", type: 'info' },
   { message: "DATA PACKET RECEIVED", type: 'info' },
   { message: "NETWORK LATENCY: {N}ms", type: 'info', hasRandomNumber: true, numberRange: [8, 45] },
   { message: "BACKUP SYSTEMS: ONLINE", type: 'info' },

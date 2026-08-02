@@ -4,6 +4,7 @@ import ResumeWindow from "../components/windows/ResumeWindow"
 import ContactWindow from "../components/windows/ContactWindow"
 import SkillsWindow from "../components/windows/SkillsWindow"
 import MissionLog from "../components/MissionLog"
+import DossierWindow from "../components/windows/DossierWindow"
 
 export interface WindowPosition {
   x: number
@@ -63,6 +64,13 @@ export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
     component: MissionLog,
     defaultPosition: { x: 0, y: 0, width: 500, height: 400 },
     defaultZIndex: 105
+  },
+  dossier: {
+    id: 'dossier',
+    title: 'Recovered Dossier',
+    component: DossierWindow,
+    defaultPosition: { x: 0, y: 0, width: 460, height: 340 },
+    defaultZIndex: 106
   }
 }
 

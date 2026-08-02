@@ -83,6 +83,8 @@ export interface Profile {
   projects: Project[]
   resume: Resume
   contact: Contact
+  /** Shown in the hidden DOSSIER window after the classified-files puzzle. */
+  dossier: string
 }
 
 export const profile: Profile = {
@@ -150,6 +152,11 @@ export const profile: Profile = {
     certifications: [], // TODO(jeff): only ones you actually hold
     downloadUrl: null, // TODO(jeff): add /resume.pdf to public/ then set '/resume.pdf'
   },
+
+  // TODO(jeff): the "behind the fiction" you — written for whoever cracks the puzzle
+  dossier:
+    '[DOSSIER BODY — the real story behind the station: who you are off-duty, ' +
+    'what you love building, the best way to reach you. Reward the explorer.]',
 
   contact: {
     email: null, // TODO(jeff): the address you want published
